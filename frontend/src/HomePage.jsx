@@ -33,7 +33,7 @@ const HomePage = () => {
 		setError("");
 		try {
 			const data = await signup(email, password);
-			setUser(data);
+			setUser({ email: data.custom_user, token: data.token });
 			setEmail("");
 			setPassword("");
 		} catch (error) {
@@ -54,7 +54,7 @@ const HomePage = () => {
 
 	return (
 		<div>
-			<h1>Welcome to Our App</h1>
+			<h1>Welcome to Horti Project</h1>
 			{error && <p style={{ color: "red" }}>{error}</p>}
 			{isAuthenticated() ? (
 				<div>

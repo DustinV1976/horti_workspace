@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const API_URL = "http://localhost:8000/users/"; // Adjust if your backend URL is different
+
 export const getCurrentUser = () => {
 	return JSON.parse(localStorage.getItem("user"));
 };
@@ -13,17 +15,22 @@ export const isAuthenticated = () => {
 	return !!getToken();
 };
 
-const API_URL = "http://localhost:8000/api/v1/users/"; // Adjust this URL as needed
-
 export const login = async (email, password) => {
 	try {
 		const response = await axios.post(`${API_URL}login/`, { email, password });
 		if (response.data.token) {
-			localStorage.setItem("user", JSON.stringify(response.data));
+			localStorage.setItem(
+				"user",
+				JSON.stringify({
+					email: response.data.custom_user,
+					token: response.data.token,
+				})
+			);
 		}
 		return response.data;
 	} catch (error) {
-		throw error; // Throw the error to allow error handling in the calling function
+		console.error("Login error", error.response?.data || error.message);
+		throw error;
 	}
 };
 
@@ -38,7 +45,8 @@ export const logout = async () => {
 		);
 		localStorage.removeItem("user");
 	} catch (error) {
-		console.error("Logout error", error); // Log the error for debugging purposes
+		console.error("Logout error", error);
+		throw error;
 	}
 };
 
@@ -46,10 +54,17 @@ export const signup = async (email, password) => {
 	try {
 		const response = await axios.post(`${API_URL}signup/`, { email, password });
 		if (response.data.token) {
-			localStorage.setItem("user", JSON.stringify(response.data));
+			localStorage.setItem(
+				"user",
+				JSON.stringify({
+					email: response.data.custom_user,
+					token: response.data.token,
+				})
+			);
 		}
 		return response.data;
 	} catch (error) {
-		throw error; // Throw the error to allow error handling in the calling function
+		console.error("Signup error", error.response?.data || error.message);
+		throw error;
 	}
 };
