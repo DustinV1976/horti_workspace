@@ -1,4 +1,3 @@
-#trainer_app.views
 from django.contrib.auth import authenticate
 from .models import CustomUser
 from rest_framework.views import APIView
@@ -36,7 +35,7 @@ class Log_in(APIView):
         custom_user = authenticate(username=email, password=password)
         if custom_user:
             token, created = Token.objects.get_or_create(user=custom_user)
-            return Response({"token": token.key, "trainer": custom_user.email})
+            return Response({"token": token.key, "custom_user": custom_user.email})
         else:
             return Response("No user matching credentials", status=HTTP_404_NOT_FOUND)
         
@@ -66,7 +65,7 @@ class Master_Sign_Up(APIView):
         master_gardener.is_staff = True
         master_gardener.is_superuser = True
         master_gardener.save()
-        token = Token.objects.create(user=admin)
+        token = Token.objects.create(user=master_gardener)
         return Response(
             {"master_gardener": master_gardener.email, "token": token.key}, status=HTTP_201_CREATED
         )
