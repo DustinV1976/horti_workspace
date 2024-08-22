@@ -1,91 +1,77 @@
-from django.contrib.auth import authenticate
-from .models import CustomUser
+from django.shortcuts import render
+from django.core.exceptions import ValidationError
+from django.contrib.auth import login, logout, authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import (
-    HTTP_201_CREATED,
-    HTTP_404_NOT_FOUND,
+    HTTP_200_OK,
     HTTP_204_NO_CONTENT,
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST
 )
-from rest_framework.authtoken.models import Token
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
+from .models import CustomUser
 
-
-
+# Create your views here.
 class Sign_up(APIView):
-    permission_classes = [AllowAny] 
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        
-        if CustomUser.objects.filter(email=email).exists():
-            return Response({"message": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user = CustomUser.objects.create_user(username=email, email=email, password=password)
-        token, _ = Token.objects.get_or_create(user=user)
-        
-        return Response({
-            "message": "User created successfully",
-            "token": token.key,
-            "user": user.email
-        }, status=status.HTTP_201_CREATED)
-
-
-
-
-# class Sign_up(APIView):
-#     def post(self, request):
-#         request.data["username"] = request.data["email"]
-#         custom_user = CustomUser.objects.create_user(**request.data)
-#         token = Token.objects.create(user=custom_user)
-#         return Response(
-#             {"custom_user": custom_user.email, "token": token.key}, status=HTTP_201_CREATED
-#         )
-        
-    
-
+        data = request.data.copy()
+        data['username'] = request.data.get("username", request.data.get("email"))
+        new_user = CustomUser(**data)
+        try:    
+            new_user.full_clean()
+            new_user.set_password(data.get("password"))
+            new_user.save()
+            login(request, new_user)
+            token = Token.objects.create(user=new_user)
+            return Response({"user": new_user.display_name, "token": token.key}, status=HTTP_201_CREATED)
+        except ValidationError as e:
+            # Log the error for debugging and return a user-friendly message
+            print(e)
+            return Response({"error": "Registration failed. Please ensure the data is correct."}, status=HTTP_400_BAD_REQUEST)
 
 class Log_in(APIView):
     def post(self, request):
-        email = request.data.get("email")
-        password = request.data.get("password")
-        custom_user = authenticate(username=email, password=password)
-        if custom_user:
-            token, created = Token.objects.get_or_create(user=custom_user)
-            return Response({"token": token.key, "custom_user": custom_user.email})
-        else:
-            return Response("No user matching credentials", status=HTTP_404_NOT_FOUND)
-        
-        
-    
-class Info(APIView):
+        data = request.data.copy()
+        data['username'] = request.data.get("username", request.data.get("email"))
+        user = authenticate(username=data.get("username"), password=data.get("password"))
+        if user:
+            login(request, user)
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({"user": user.display_name, "token": token.key}, status=HTTP_200_OK)
+        return Response({"error": "Invalid credentials. Please try again."}, status=HTTP_400_BAD_REQUEST)
+
+class TokenReq(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        return Response({"email": request.user.email})
-
-
-class Log_out(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
+class Log_out(TokenReq):
     def post(self, request):
         request.user.auth_token.delete()
+        logout(request)
         return Response(status=HTTP_204_NO_CONTENT)
-    
-    
-class Master_Sign_Up(APIView):
 
-    def post(self, request):
-        master_gardener = CustomUser.objects.create_user(**request.data)
-        master_gardener.is_staff = True
-        master_gardener.is_superuser = True
-        master_gardener.save()
-        token = Token.objects.create(user=master_gardener)
-        return Response(
-            {"master_gardener": master_gardener.email, "token": token.key}, status=HTTP_201_CREATED
-        )
+class Info(TokenReq):
+    def get(self, request):
+        return Response({"user": request.user.display_name})
+    
+    def put(self, request):
+        try:
+            data = request.data.copy()
+            ruser = request.user
+            ruser.display_name = data.get("display_name", ruser.display_name)
+            ruser.age = data.get("age", ruser.age)
+            ruser.address = data.get("address", ruser.address)
+            cur_pass = data.get("password")
+            if cur_pass and data.get("new_password"):
+                auth_user = authenticate(username=ruser.username, password=cur_pass)
+                if auth_user == ruser:
+                    ruser.set_password(data.get("new_password"))
+            ruser.full_clean()
+            ruser.save()
+            return Response({"display_name": ruser.display_name, "age": ruser.age, "address": ruser.address})
+        except ValidationError as e:
+            print(e)
+            return Response({"error": "Update failed. Please ensure the data is correct."}, status=HTTP_400_BAD_REQUEST)

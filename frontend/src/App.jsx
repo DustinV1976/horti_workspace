@@ -1,27 +1,32 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Navbar from "./Navbar";
-import HomePage from "./HomePage";
-import MyGardenPage from "./MyGardenPage";
-import NutrientsPage from "./NutrientsPage";
-import LoginPage from "./LoginPage";
-import SignupPage from "./SignupPage";
+import { useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
+import {
+	Outlet,
+	useLoaderData,
+	useLocation,
+	useNavigate,
+} from "react-router-dom";
 import "./App.css";
 
 function App() {
+	const [user, setUser] = useState(useLoaderData());
+	const location = useLocation();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		let nullUserUrls = ["/login", "/signup"];
+		let isAllowed = nullUserUrls.includes(location.pathname);
+
+		if (!isAllowed && !user) {
+			navigate("/login"); // Example of redirect if user is not allowed
+		}
+	}, [location.pathname, user, navigate]); // Added 'navigate' to dependency array
+
 	return (
-		<Router>
-			<div className="App">
-				<Navbar />
-				<Routes>
-					<Route path="/" element={<HomePage />} />
-					<Route path="/my-garden" element={<MyGardenPage />} />
-					<Route path="/nutrients" element={<NutrientsPage />} />
-					<Route path="/login" element={<LoginPage />} />
-					<Route path="/signup" element={<SignupPage />} />
-				</Routes>
-			</div>
-		</Router>
+		<>
+			<Navbar setUser={setUser} user={user} />
+			<Outlet context={{ user, setUser }} />
+		</>
 	);
 }
 

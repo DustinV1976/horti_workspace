@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./MyGardenPage.css";
+// import MyGardenDisplay from '../components/MyGardenDisplay';
+import "../Styling/MyGardenPage.css";
 
 const MyGardenPage = () => {
 	const [plants, setPlants] = useState([]);
