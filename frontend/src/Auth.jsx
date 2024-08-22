@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/users/"; // Adjust if your backend URL is different
+const API_URL = "http://localhost:8000/api/v1/users/"; // Adjust if your backend URL is different
 
 export const getCurrentUser = () => {
 	return JSON.parse(localStorage.getItem("user"));
@@ -52,19 +52,18 @@ export const logout = async () => {
 
 export const signup = async (email, password) => {
 	try {
-		const response = await axios.post(`${API_URL}signup/`, { email, password });
-		if (response.data.token) {
-			localStorage.setItem(
-				"user",
-				JSON.stringify({
-					email: response.data.custom_user,
-					token: response.data.token,
-				})
-			);
-		}
-		return response.data;
+	  const response = await axios.post(`${API_URL}signup/`, { email, password });
+	  if (response.data.token) {
+		localStorage.setItem("user", JSON.stringify({
+		  email: response.data.user,
+		  token: response.data.token
+		}));
+	  }
+	  return response.data;
 	} catch (error) {
-		console.error("Signup error", error.response?.data || error.message);
-		throw error;
+	  if (error.response && error.response.data.message) {
+		throw new Error(error.response.data.message);
+	  }
+	  throw error;
 	}
-};
+  };

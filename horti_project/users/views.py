@@ -10,20 +10,40 @@ from rest_framework.status import (
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
-
-
+from rest_framework import status
+from rest_framework.permissions import AllowAny
 
 
 
 class Sign_up(APIView):
+    permission_classes = [AllowAny] 
     def post(self, request):
-        request.data["username"] = request.data["email"]
-        custom_user = CustomUser.objects.create_user(**request.data)
-        token = Token.objects.create(user=custom_user)
-        return Response(
-            {"custom_user": custom_user.email, "token": token.key}, status=HTTP_201_CREATED
-        )
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if CustomUser.objects.filter(email=email).exists():
+            return Response({"message": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = CustomUser.objects.create_user(username=email, email=email, password=password)
+        token, _ = Token.objects.get_or_create(user=user)
+        
+        return Response({
+            "message": "User created successfully",
+            "token": token.key,
+            "user": user.email
+        }, status=status.HTTP_201_CREATED)
+
+
+
+
+# class Sign_up(APIView):
+#     def post(self, request):
+#         request.data["username"] = request.data["email"]
+#         custom_user = CustomUser.objects.create_user(**request.data)
+#         token = Token.objects.create(user=custom_user)
+#         return Response(
+#             {"custom_user": custom_user.email, "token": token.key}, status=HTTP_201_CREATED
+#         )
         
     
 

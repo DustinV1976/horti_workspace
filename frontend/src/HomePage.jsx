@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { login, logout, signup, getCurrentUser, isAuthenticated } from "./Auth";
+import MyGardenPage from "./MyGardenPage";
 
 const HomePage = () => {
 	const [user, setUser] = useState(null);
@@ -7,10 +8,13 @@ const HomePage = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 
+	const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated());
+
 	useEffect(() => {
 		const currentUser = getCurrentUser();
 		if (currentUser) {
 			setUser(currentUser);
+			setIsLoggedIn(true);
 		}
 	}, []);
 
@@ -20,6 +24,7 @@ const HomePage = () => {
 		try {
 			const data = await login(email, password);
 			setUser(data);
+			setIsLoggedIn(true);
 			setEmail("");
 			setPassword("");
 		} catch (error) {
@@ -33,12 +38,13 @@ const HomePage = () => {
 		setError("");
 		try {
 			const data = await signup(email, password);
-			setUser({ email: data.custom_user, token: data.token });
+			setUser(data);
+			setIsLoggedIn(true);
 			setEmail("");
 			setPassword("");
 		} catch (error) {
 			console.error("Signup error", error);
-			setError("Signup failed. Please try again.");
+			setError(error.message || "Signup failed. Please try again.");
 		}
 	};
 
@@ -46,14 +52,19 @@ const HomePage = () => {
 		try {
 			await logout();
 			setUser(null);
+			setIsLoggedIn(false);
 		} catch (error) {
 			console.error("Logout error", error);
 			setError("Logout failed. Please try again.");
 		}
 	};
 
+	if (isLoggedIn) {
+		return <MyGardenPage />;
+	}
+
 	return (
-		<div>
+		<div className="home-page">
 			<h1>Welcome to Horti Project</h1>
 			{error && <p style={{ color: "red" }}>{error}</p>}
 			{isAuthenticated() ? (
