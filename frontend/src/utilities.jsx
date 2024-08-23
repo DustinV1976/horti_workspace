@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-	baseURL: "http://127.0.0.1:8000/api/v1/",
+	baseURL: "http://127.0.0.1:8000/api/v1/users",
 });
 
 export const userConfirmation = async () => {
@@ -18,7 +18,7 @@ export const userConfirmation = async () => {
 };
 
 export const userRegistration = async (email, password) => {
-	let response = await api.post("users/signup/", {
+	let response = await api.post("/signup/", {
 		email: email,
 		password: password,
 	});
@@ -34,7 +34,7 @@ export const userRegistration = async (email, password) => {
 
 export const userLogIn = async (email, password) => {
 	try {
-		let response = await api.post("users/login/", {
+		let response = await api.post("/login/", {
 			email: email,
 			password: password,
 		});
@@ -54,13 +54,18 @@ export const userLogIn = async (email, password) => {
 };
 
 export const userLogOut = async () => {
-	let response = await api.post("users/logout/");
-	if (response.status === 204) {
-		localStorage.removeItem("token");
-		delete api.defaults.headers.common["Authorization"];
-		return null;
+	try {
+		let response = await api.post("users/logout/");
+		if (response.status === 204) {
+			localStorage.removeItem("token");
+			delete api.defaults.headers.common["Authorization"];
+			return null;
+		}
+	} catch (error) {
+		console.error("Logout error:", error);
+		alert("Something went wrong and logout failed");
 	}
-	alert("Something went wrong and logout failed");
+	return null;
 };
 
 export const getUsersLists = async () => {

@@ -1,120 +1,109 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-// import MyGardenDisplay from '../components/MyGardenDisplay';
-import "../Styling/MyGardenPage.css";
+import { Container, Row, Col, Form, Spinner } from "react-bootstrap";
+import { api } from "../utilities";
 
 const MyGardenPage = () => {
-	const [plants, setPlants] = useState([]);
-	const [showForm, setShowForm] = useState(false);
+	const [garden, setGarden] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [edit, setEdit] = useState(false);
 	const [name, setName] = useState("");
-	const [type, setType] = useState("");
-	const [datePlanted, setDatePlanted] = useState("");
-	const [image, setImage] = useState(null);
+	const [plantType, setPlantType] = useState("");
 
 	useEffect(() => {
-		fetchPlants();
+		const fetchGarden = async () => {
+			try {
+				const response = await api.get("/api/mygarden/");
+				const gardenData = response.data;
+				setGarden(gardenData);
+				setName(gardenData.name);
+				setPlantType(gardenData.plant_type);
+			} catch (error) {
+				console.error("Error fetching garden data:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchGarden();
 	}, []);
 
-	const fetchPlants = async () => {
-		try {
-			const response = await axios.get("http://localhost:8000/api/v1/plants/", {
-				headers: {
-					Authorization: `Token ${localStorage.getItem("token")}`,
-				},
-			});
-			setPlants(response.data);
-		} catch (error) {
-			console.error("Error fetching plants:", error);
+	const cancelEdit = () => {
+		if (garden) {
+			setName(garden.name);
+			setPlantType(garden.plant_type);
 		}
+		setEdit(false);
 	};
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		const formData = new FormData();
-		formData.append("name", name);
-		formData.append("date_planted", datePlanted);
-		if (type) formData.append("type", type);
-		if (image) formData.append("image", image);
-
+	const editGarden = async () => {
 		try {
-			await axios.post("http://localhost:8000/api/v1/plants/", formData, {
-				headers: {
-					Authorization: `Token ${localStorage.getItem("token")}`,
-					"Content-Type": "multipart/form-data",
-				},
+			const response = await api.put(`gardens/${garden.id}/`, {
+				name: name,
+				plant_type: plantType,
 			});
-			fetchPlants();
-			setShowForm(false);
-			setName("");
-			setType("");
-			setDatePlanted("");
-			setImage(null);
+			if (response.status === 200) {
+				alert("Garden has been successfully updated!");
+				setEdit(false);
+				setGarden({ ...garden, name, plant_type: plantType });
+			} else {
+				alert("Failed to update garden. Please try again.");
+				cancelEdit();
+			}
 		} catch (error) {
-			console.error("Error adding plant:", error);
+			console.error("Error updating garden:", error);
+			alert("An error occurred while updating the garden.");
+			cancelEdit();
 		}
 	};
 
 	return (
-		<div className="my-garden-page">
+		<Container>
 			<h1>My Garden</h1>
-			<button onClick={() => setShowForm(true)} className="add-plant-button">
-				Add Plant
-			</button>
-
-			{showForm && (
-				<div className="modal">
-					<div className="modal-content">
-						<h2>Add a New Plant</h2>
-						<form onSubmit={handleSubmit}>
-							<input
+			{loading ? (
+				<Spinner animation="border" />
+			) : (
+				<Row>
+					<Col xs={6}>
+						{edit ? (
+							<Form.Control
 								type="text"
+								placeholder={garden.name}
 								value={name}
 								onChange={(e) => setName(e.target.value)}
-								placeholder="Plant Name"
-								required
 							/>
-							<input
+						) : (
+							<h2>{name}</h2>
+						)}
+					</Col>
+					<Col xs={3}>
+						{edit ? (
+							<Form.Control
 								type="text"
-								value={type}
-								onChange={(e) => setType(e.target.value)}
-								placeholder="Plant Type (optional)"
+								placeholder={garden.plant_type}
+								value={plantType}
+								onChange={(e) => setPlantType(e.target.value)}
 							/>
-							<input
-								type="date"
-								value={datePlanted}
-								onChange={(e) => setDatePlanted(e.target.value)}
-								required
-							/>
-							<input
-								type="file"
-								onChange={(e) => setImage(e.target.files[0])}
-							/>
-							<div className="form-buttons">
-								<button type="submit">Add Plant</button>
-								<button type="button" onClick={() => setShowForm(false)}>
-									Cancel
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
+						) : (
+							<p>{plantType}</p>
+						)}
+					</Col>
+					{edit ? (
+						<>
+							<Col xs={1} onClick={() => cancelEdit()}>
+								❌
+							</Col>
+							<Col xs={1} onClick={() => editGarden()}>
+								✅
+							</Col>
+						</>
+					) : (
+						<Col xs={1} onClick={() => setEdit(true)}>
+							✏️
+						</Col>
+					)}
+				</Row>
 			)}
-
-			{plants.length === 0 ? (
-				<p>Your garden is empty. Click 'Add Plant' to start your garden!</p>
-			) : (
-				<div className="plant-grid">
-					{plants.map((plant) => (
-						<div key={plant.id} className="plant-card">
-							{plant.image && <img src={plant.image} alt={plant.name} />}
-							<h2>{plant.name}</h2>
-							{plant.type && <p>Type: {plant.type}</p>}
-							<p>Planted: {plant.date_planted}</p>
-						</div>
-					))}
-				</div>
-			)}
-		</div>
+		</Container>
 	);
 };
 

@@ -7,6 +7,20 @@ import {
 	useNavigate,
 } from "react-router-dom";
 import "./App.css";
+// import axios from "axios";
+
+// const test_connection = async () => {
+// 	try {
+// 		let response = await axios.get("http://127.0.0.1:8000/api/test/");
+// 		console.log("Connection successful:", response);
+// 	} catch (error) {
+// 		console.error("Error connecting to backend:", error);
+// 	}
+// };
+
+// useEffect(() => {
+// 	test_connection();
+// }, []);
 
 function App() {
 	const [user, setUser] = useState(useLoaderData());

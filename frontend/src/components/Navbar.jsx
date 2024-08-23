@@ -1,11 +1,22 @@
+import React from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import { userLogOut } from "../utilities";
 
 function NavBar({ setUser, user }) {
+	const handleLogout = async () => {
+		try {
+			const result = await userLogOut();
+			setUser(result);
+		} catch (error) {
+			console.error("Error during logout:", error);
+			alert("An error occurred during logout. Please try again.");
+		}
+	};
+
 	return (
 		<Navbar expand="lg" className="bg-body-tertiary">
 			<Container>
@@ -35,10 +46,7 @@ function NavBar({ setUser, user }) {
 								<Nav.Link as={Link} to="/mygarden/">
 									My Garden
 								</Nav.Link>
-								<Button
-									variant="outline-danger"
-									onClick={async () => setUser(await userLogOut())}
-								>
+								<Button variant="outline-danger" onClick={handleLogout}>
 									Log Out
 								</Button>
 							</>
