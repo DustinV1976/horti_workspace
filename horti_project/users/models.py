@@ -1,25 +1,13 @@
-# users/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core import validators as v
+# Create your models here.
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(
-        verbose_name='email address',
-        max_length=255,
-        unique=True,
-    )
+    email = models.EmailField(unique=True)
+    display_name = models.CharField(default='unknown' , max_length=50)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-    
-    
-    
-   
-
-    def __str__(self):
-        return self.email
-    
-    
-    
-
+    REQUIRED_FIELDS =[]
+    # lists
    

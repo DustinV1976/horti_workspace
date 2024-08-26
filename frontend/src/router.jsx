@@ -1,19 +1,19 @@
+import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import HomePage from "./Pages/HomePage.jsx";
-import NutrientsPage from "./Pages/NutrientsPage.jsx";
-import MyGardenPage from "./Pages/MyGardenPage.jsx";
-import SignUp from "./Pages/SignUp.jsx";
-import LogIn from "./Pages/LogInPage.jsx";
-import NotFoundPage from "./Pages/NotFoundPage.jsx";
-import ErrorPage from "./Pages/ErrorPage.jsx";
-import { userConfirmation } from "./utilities";
+import HomePage from "./Pages/HomePage";
+import NutrientsPage from "./Pages/NutrientsPage";
+import MyGardenPage from "./Pages/MyGardenPage";
+import SignUp from "./Pages/SignUp";
+import LogIn from "./Pages/LogInPage";
+import NotFoundPage from "./Pages/NotFoundPage";
+import ErrorPage from "./Pages/ErrorPage";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <App />,
-		loader: userConfirmation,
+
 		errorElement: <ErrorPage />,
 		children: [
 			{

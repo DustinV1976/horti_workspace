@@ -57,21 +57,4 @@ class Info(TokenReq):
     def get(self, request):
         return Response({"user": request.user.display_name})
     
-    def put(self, request):
-        try:
-            data = request.data.copy()
-            ruser = request.user
-            ruser.display_name = data.get("display_name", ruser.display_name)
-            ruser.age = data.get("age", ruser.age)
-            ruser.address = data.get("address", ruser.address)
-            cur_pass = data.get("password")
-            if cur_pass and data.get("new_password"):
-                auth_user = authenticate(username=ruser.username, password=cur_pass)
-                if auth_user == ruser:
-                    ruser.set_password(data.get("new_password"))
-            ruser.full_clean()
-            ruser.save()
-            return Response({"display_name": ruser.display_name, "age": ruser.age, "address": ruser.address})
-        except ValidationError as e:
-            print(e)
-            return Response({"error": "Update failed. Please ensure the data is correct."}, status=HTTP_400_BAD_REQUEST)
+    
