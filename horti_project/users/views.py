@@ -13,35 +13,52 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from .models import CustomUser
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 class Sign_up(APIView):
+    permission_classes = [AllowAny]  # Allow any user to access this view
+    
     def post(self, request):
         data = request.data.copy()
-        data['username'] = request.data.get("username", request.data.get("email"))
-        new_user = CustomUser(**data)
-        try:    
-            new_user.full_clean()
-            new_user.set_password(data.get("password"))
-            new_user.save()
+        email = data.get('email')
+        password = data.get('password')
+        display_name = data.get('display_name')
+
+        if not email or not password or not display_name:
+            return Response({"error": "Email, password, and display name are required."}, status=HTTP_400_BAD_REQUEST)
+
+        try:
+            new_user = CustomUser.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                display_name=display_name
+            )
             login(request, new_user)
-            token = Token.objects.create(user=new_user)
+            token, _ = Token.objects.get_or_create(user=new_user)
             return Response({"user": new_user.display_name, "token": token.key}, status=HTTP_201_CREATED)
-        except ValidationError as e:
-            # Log the error for debugging and return a user-friendly message
+        except Exception as e:
             print(e)
             return Response({"error": "Registration failed. Please ensure the data is correct."}, status=HTTP_400_BAD_REQUEST)
 
 class Log_in(APIView):
     def post(self, request):
-        data = request.data.copy()
-        data['username'] = request.data.get("username", request.data.get("email"))
-        user = authenticate(username=data.get("username"), password=data.get("password"))
+        email = request.data.get("email")
+        password = request.data.get("password")
+        user = authenticate(username=email, password=password)
         if user:
             login(request, user)
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({"user": user.display_name, "token": token.key}, status=HTTP_200_OK)
-        return Response({"error": "Invalid credentials. Please try again."}, status=HTTP_400_BAD_REQUEST)
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "display_name": user.display_name
+                },
+                "token": token.key
+            }, status=HTTP_200_OK)
+        return Response({"error": "Invalid credentials"}, status=HTTP_400_BAD_REQUEST)
 
 class TokenReq(APIView):
     authentication_classes = [TokenAuthentication]

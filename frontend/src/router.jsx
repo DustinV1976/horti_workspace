@@ -4,8 +4,8 @@ import App from "./App";
 import HomePage from "./Pages/HomePage";
 import NutrientsPage from "./Pages/NutrientsPage";
 import MyGardenPage from "./Pages/MyGardenPage";
-import SignUp from "./Pages/SignUp";
-import LogIn from "./Pages/LogInPage";
+import SignUpPage from "./Pages/SignUpPage";
+import LogInPage from "./Pages/LogInPage";
 import NotFoundPage from "./Pages/NotFoundPage";
 import ErrorPage from "./Pages/ErrorPage";
 
@@ -13,7 +13,6 @@ const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <App />,
-
 		errorElement: <ErrorPage />,
 		children: [
 			{
@@ -28,14 +27,13 @@ const router = createBrowserRouter([
 				path: "nutrients",
 				element: <NutrientsPage />,
 			},
-
 			{
 				path: "signup",
-				element: <SignUp />,
+				element: <SignUpPage />,
 			},
 			{
 				path: "login",
-				element: <LogIn />,
+				element: <LogInPage />,
 			},
 			{
 				path: "*",

@@ -11,3 +11,5 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS =[]
     # lists
    
+    def __str__(self):
+        return self.display_name
