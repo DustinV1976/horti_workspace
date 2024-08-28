@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+
 import {
 	Container,
 	Row,
@@ -6,7 +8,6 @@ import {
 	Card,
 	Button,
 	Alert,
-	Image,
 } from "react-bootstrap";
 import NutrientForm from "../components/NutrientForm";
 import NutrientList from "../components/NutrientList";

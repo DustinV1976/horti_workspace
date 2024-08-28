@@ -6,27 +6,40 @@ import { signup, setAuthToken } from "../api";
 const SignUp = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [displayName, setDisplayName] = useState("");
+	const [username, setUsername] = useState("");
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
 	const [, setIsLoggedIn, , setUser] = useOutletContext();
+
+	const validateForm = () => {
+		if (!email || !username || !password) {
+			setError("All fields are required.");
+			return false;
+		}
+		return true;
+	};
 
 	const handleSignUp = async (e) => {
 		e.preventDefault();
 		setError("");
 
+		if (!validateForm()) return;
+
 		try {
 			const response = await signup({
 				email,
 				password,
-				display_name: displayName,
+				username,
 			});
 			const { token, user } = response.data;
+
 			localStorage.setItem("authToken", token);
 			localStorage.setItem("user", JSON.stringify(user));
 			setAuthToken(token);
+
 			setIsLoggedIn(true);
 			setUser(user);
+
 			navigate("/mygarden");
 		} catch (err) {
 			setError(
@@ -34,6 +47,7 @@ const SignUp = () => {
 			);
 		}
 	};
+
 	return (
 		<Form onSubmit={handleSignUp}>
 			<h2>Sign Up</h2>
@@ -49,13 +63,12 @@ const SignUp = () => {
 				/>
 			</Form.Group>
 			<Form.Group className="mb-3">
-				<Form.Label>Display Name</Form.Label>
+				<Form.Label>Username</Form.Label> {}
 				<Form.Control
 					type="text"
-					placeholder="Enter display name"
-					value={displayName}
-					onChange={(e) => setDisplayName(e.target.value)}
-					required
+					placeholder="Enter username"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
 				/>
 			</Form.Group>
 			<Form.Group className="mb-3">

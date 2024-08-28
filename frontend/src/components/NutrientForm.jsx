@@ -10,30 +10,23 @@ const NutrientForm = ({ onSubmit, initialData = {} }) => {
 		nitrogen: initialData.nitrogen || "0",
 		phosphorus: initialData.phosphorus || "0",
 		potassium: initialData.potassium || "0",
-		image: null,
 	});
 
 	const handleChange = (e) => {
-		const { name, value, files } = e.target;
+		const { name, value } = e.target;
 		setNutrient((prev) => ({
 			...prev,
-			[name]: files ? files[0] : value,
+			[name]: value,
 		}));
 	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		const formData = new FormData();
-		for (const key in nutrient) {
-			if (nutrient[key] !== null) {
-				formData.append(key, nutrient[key]);
-			}
-		}
-		onSubmit(formData);
+		onSubmit(nutrient);
 	};
 
 	return (
-		<Form onSubmit={handleSubmit}>
+		<Form>
 			<Form.Group>
 				<Form.Label>Name*</Form.Label>
 				<Form.Control
@@ -94,11 +87,7 @@ const NutrientForm = ({ onSubmit, initialData = {} }) => {
 					onChange={handleChange}
 				/>
 			</Form.Group>
-			<Form.Group>
-				<Form.Label>Image</Form.Label>
-				<Form.Control type="file" name="image" onChange={handleChange} />
-			</Form.Group>
-			<Button type="submit">
+			<Button type="submit" onClick={handleSubmit}>
 				{initialData.id ? "Update Nutrient" : "Add Nutrient"}
 			</Button>
 		</Form>
@@ -114,7 +103,6 @@ NutrientForm.propTypes = {
 		nitrogen: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 		phosphorus: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 		potassium: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-		// image: PropTypes.object,
 	}),
 };
 

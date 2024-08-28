@@ -27,6 +27,7 @@ const Login = () => {
 			setError(err.response?.data?.error || "Login failed. Please try again.");
 		}
 	};
+
 	return (
 		<Form onSubmit={handleLogin}>
 			<h2>Login</h2>

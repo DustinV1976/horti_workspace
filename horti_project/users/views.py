@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.core.exceptions import ValidationError
 from django.contrib.auth import login, logout, authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,43 +8,58 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST
 )
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from .models import CustomUser
-from rest_framework.permissions import AllowAny
 
-# Create your views here.
 class Sign_up(APIView):
-    permission_classes = [AllowAny]  # Allow any user to access this view
+    permission_classes = [AllowAny]  
     
     def post(self, request):
         data = request.data.copy()
+        username = data.get('username')
         email = data.get('email')
         password = data.get('password')
-        display_name = data.get('display_name')
+        
+        print(f"Received data: username={username}, email={email}, password={password}")
 
-        if not email or not password or not display_name:
-            return Response({"error": "Email, password, and display name are required."}, status=HTTP_400_BAD_REQUEST)
+        if not username or not email or not password:
+            return Response({"error": "Username, email, and password are required."}, status=HTTP_400_BAD_REQUEST)
 
         try:
+            if CustomUser.objects.filter(email=email).exists():
+                return Response({"error": "Email is already registered."}, status=HTTP_400_BAD_REQUEST)
+
             new_user = CustomUser.objects.create_user(
-                username=email,
+                username=username,
                 email=email,
-                password=password,
-                display_name=display_name
+                password=password
             )
             login(request, new_user)
             token, _ = Token.objects.get_or_create(user=new_user)
-            return Response({"user": new_user.display_name, "token": token.key}, status=HTTP_201_CREATED)
+            return Response({
+                "user": {
+                    "id": new_user.id,
+                    "username": new_user.username,
+                    "email": new_user.email
+                },
+                "token": token.key
+            }, status=HTTP_201_CREATED)
         except Exception as e:
             print(e)
             return Response({"error": "Registration failed. Please ensure the data is correct."}, status=HTTP_400_BAD_REQUEST)
 
 class Log_in(APIView):
+    permission_classes = [AllowAny] 
+
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
+
+        if not email or not password:
+            return Response({"error": "Email and password are required."}, status=HTTP_400_BAD_REQUEST)
+
         user = authenticate(username=email, password=password)
         if user:
             login(request, user)
@@ -53,25 +67,25 @@ class Log_in(APIView):
             return Response({
                 "user": {
                     "id": user.id,
-                    "email": user.email,
-                    "display_name": user.display_name
+                    "username": user.username,
+                    "email": user.email
                 },
                 "token": token.key
             }, status=HTTP_200_OK)
         return Response({"error": "Invalid credentials"}, status=HTTP_400_BAD_REQUEST)
 
-class TokenReq(APIView):
+class Log_out(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-class Log_out(TokenReq):
     def post(self, request):
         request.user.auth_token.delete()
         logout(request)
         return Response(status=HTTP_204_NO_CONTENT)
 
-class Info(TokenReq):
+class Info(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        return Response({"user": request.user.display_name})
-    
-    
+        return Response({"user": request.user.username})

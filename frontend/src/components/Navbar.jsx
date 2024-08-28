@@ -4,7 +4,7 @@ import { Navbar, Nav, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { logout } from "../api";
 
-const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser }) => {
+const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser, user }) => {
 	const navigate = useNavigate();
 
 	const handleLogout = async () => {
@@ -14,7 +14,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser }) => {
 			localStorage.removeItem("user");
 			setIsLoggedIn(false);
 			setUser(null);
-			navigate("/");
+			navigate("/homepage");
 		} catch (error) {
 			console.error("Logout failed", error);
 		}
@@ -51,9 +51,16 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser }) => {
 						</>
 					)}
 				</Nav>
-				{isLoggedIn && (
+				{isLoggedIn && user && (
 					<Nav>
-						<Button onClick={handleLogout} variant="outline-primary">
+						<Navbar.Text>
+							Welcome <strong>{user.username}!</strong>
+						</Navbar.Text>
+						<Button
+							onClick={handleLogout}
+							variant="outline-primary"
+							className="ml-2"
+						>
 							Log Out
 						</Button>
 					</Nav>
@@ -66,6 +73,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser }) => {
 NavBar.propTypes = {
 	isLoggedIn: PropTypes.bool.isRequired,
 	setIsLoggedIn: PropTypes.func.isRequired,
+	setUser: PropTypes.func.isRequired,
 	user: PropTypes.object,
 };
 

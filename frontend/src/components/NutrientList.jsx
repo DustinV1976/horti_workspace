@@ -23,7 +23,7 @@ const NutrientList = ({ nutrients, onEdit }) => {
 							style={{ maxWidth: "100px" }}
 							onError={(e) => {
 								e.target.onerror = null;
-								e.target.src = "path/to/placeholder/image.jpg";
+								e.target.src = "./media/nutrient_images/";
 							}}
 						/>
 					)}

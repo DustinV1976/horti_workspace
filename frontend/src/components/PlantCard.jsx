@@ -29,7 +29,7 @@ PlantCard.propTypes = {
 	plant: PropTypes.shape({
 		id: PropTypes.number.isRequired,
 		name: PropTypes.string.isRequired,
-		photo: PropTypes.instanceOf(File),
+		photo: PropTypes.string,
 		date_planted: PropTypes.string.isRequired,
 	}).isRequired,
 	onDelete: PropTypes.func.isRequired,
