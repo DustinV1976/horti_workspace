@@ -1,11 +1,29 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const PlantPage = () => {
+	const { id } = useParams(); // Get plant ID from URL
+	const [plant, setPlant] = useState(null);
 	const [weatherData, setWeatherData] = useState(null);
 	const [userFertSchedule, setUserFertSchedule] = useState("");
 	const [zipCode, setZipCode] = useState("");
 	const [hardinessZone, setHardinessZone] = useState(null);
+	const [error, setError] = useState(null);
+
+	useEffect(() => {
+		// Fetch plant details by ID
+		const fetchPlant = async () => {
+			try {
+				const response = await axios.get(`/api/v1/plants/${id}/`); // Adjust API endpoint as needed
+				setPlant(response.data);
+			} catch (err) {
+				setError("Failed to load plant details.");
+			}
+		};
+
+		fetchPlant();
+	}, [id]);
 
 	useEffect(() => {
 		const fetchWeatherData = async () => {
@@ -40,9 +58,25 @@ const PlantPage = () => {
 		}
 	};
 
+	if (error) {
+		return <div>{error}</div>;
+	}
+
+	if (!plant) {
+		return <div>Loading plant details...</div>;
+	}
+
 	return (
 		<div className="plant-page">
-			<h1>Plant Page</h1>
+			<h1>{plant.name}</h1>
+
+			<div className="plant-info">
+				<img src={plant.image || "/images/tree_book1.jpg"} alt={plant.name} />
+				<div className="plant-details">
+					<p>Strain: {plant.strain || "N/A"}</p>
+					<p>Date Planted: {plant.date_planted}</p>
+				</div>
+			</div>
 
 			<div className="hardiness-zone-search">
 				<input
@@ -61,15 +95,6 @@ const PlantPage = () => {
 					<p>Temperature Range: {hardinessZone.temperature_range}</p>
 				</div>
 			)}
-
-			<div className="plant-info">
-				<div className="latest-photo">{/* Add plant photo here */}</div>
-				<div className="plant-details">
-					<p>Name: Plant Name</p>
-					<p>Strain: Plant Strain</p>
-					<p>Date Planted: MM/DD/YYYY</p>
-				</div>
-			</div>
 
 			<div className="fertilizing-schedules">
 				<h2>Recommended Fertilizing Schedule</h2>

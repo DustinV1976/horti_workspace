@@ -1,11 +1,29 @@
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 
 const HomePage = () => {
-	const context = useOutletContext();
-	const user = context ? context.user : null;
+	return (
+		<div style={styles.container}>
+			<h1 style={styles.heading}>Welcome</h1>
+		</div>
+	);
+};
 
-	return <h1>Welcome{user ? ` ${user}` : ""}</h1>;
+const styles = {
+	container: {
+		backgroundImage: `url('/images/tree_book2.jpeg')`,
+		backgroundSize: "cover",
+		backgroundPosition: "center",
+		height: "100vh",
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "flex-start",
+		paddingTop: "20px",
+	},
+	heading: {
+		color: "white",
+		textAlign: "center",
+		fontSize: "2.5rem",
+	},
 };
 
 export default HomePage;

@@ -10,8 +10,8 @@ const ErrorPage = () => {
 				justifyContent: "center",
 				alignItems: "center",
 			}}
-		>
-			<img src={errImg} style={{ height: "90vh", width: "90vw" }} />
+		
+			<img src={errImg} alt="Error" style={{ height: "90vh", width: "90vw" }} />
 		</div>
 	);
 };

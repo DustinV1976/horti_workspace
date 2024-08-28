@@ -7,6 +7,4 @@ class PlantSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'type', 'date_planted']
 
     def create(self, validated_data):
-        request = self.context.get('request')
-        plant = Plant.objects.create(user=request.user, **validated_data)
-        return plant
+        return Plant.objects.create(**validated_data)

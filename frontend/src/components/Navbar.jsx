@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Navbar, Nav, Button } from "react-bootstrap";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { logout } from "../api";
 
@@ -14,7 +14,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser, user }) => {
 			localStorage.removeItem("user");
 			setIsLoggedIn(false);
 			setUser(null);
-			navigate("/homepage");
+			navigate("/");
 		} catch (error) {
 			console.error("Logout failed", error);
 		}
@@ -22,46 +22,47 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser, user }) => {
 
 	return (
 		<Navbar bg="light" expand="lg">
-			<Navbar.Brand as={Link} to="/">
-				My Garden App
-			</Navbar.Brand>
-			<Navbar.Toggle aria-controls="basic-navbar-nav" />
-			<Navbar.Collapse id="basic-navbar-nav">
-				<Nav className="mr-auto">
-					{isLoggedIn ? (
-						<>
-							<Nav.Link as={Link} to="/">
-								Home
-							</Nav.Link>
-							<Nav.Link as={Link} to="/mygarden">
-								My Garden
-							</Nav.Link>
-							<Nav.Link as={Link} to="/nutrients">
-								Nutrients
-							</Nav.Link>
-						</>
-					) : (
-						<>
-							<Nav.Link as={Link} to="/signup">
-								Sign Up
-							</Nav.Link>
-							<Nav.Link as={Link} to="/login">
-								Log In
-							</Nav.Link>
-						</>
-					)}
-				</Nav>
-				{isLoggedIn && user && (
+			<Container>
+				<Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+					<img
+						src="/images/horti_logo.WEBP"
+						alt="Horti Logo"
+						style={{ width: "80px", height: "80px", marginRight: "10px" }}
+					/>
+					<span
+						style={{ fontFamily: "'Cursive', sans-serif", fontSize: "24px" }}
+					>
+						Horti
+					</span>
+				</Navbar.Brand>
+				<Navbar.Toggle aria-controls="basic-navbar-nav" />
+				<Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
 					<Nav>
-						<Navbar.Text className="mr-2">
-							Welcome <strong>{user.username}!</strong>
-						</Navbar.Text>
-						<Button onClick={handleLogout} variant="outline-primary">
-							Log Out
-						</Button>
+						{isLoggedIn ? (
+							<>
+								<Nav.Link as={Link} to="/mygarden">
+									My Garden
+								</Nav.Link>
+								<Nav.Link as={Link} to="/nutrients">
+									Nutrients
+								</Nav.Link>
+								<Button onClick={handleLogout} variant="outline-primary">
+									Log Out
+								</Button>
+							</>
+						) : (
+							<>
+								<Nav.Link as={Link} to="/login">
+									<Button variant="outline-primary">Log In</Button>
+								</Nav.Link>
+								<Nav.Link as={Link} to="/signup">
+									<Button variant="primary">Sign Up</Button>
+								</Nav.Link>
+							</>
+						)}
 					</Nav>
-				)}
-			</Navbar.Collapse>
+				</Navbar.Collapse>
+			</Container>
 		</Navbar>
 	);
 };
@@ -70,7 +71,9 @@ NavBar.propTypes = {
 	isLoggedIn: PropTypes.bool.isRequired,
 	setIsLoggedIn: PropTypes.func.isRequired,
 	setUser: PropTypes.func.isRequired,
-	user: PropTypes.object,
+	user: PropTypes.shape({
+		username: PropTypes.string,
+	}),
 };
 
 export default NavBar;

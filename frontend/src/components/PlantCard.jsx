@@ -1,43 +1,59 @@
 import React from "react";
-import { Card, Button } from "react-bootstrap";
-import PropTypes from "prop-types";
+import { Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const PlantCard = ({ plant, onDelete }) => {
+const PlantCard = ({ plant }) => {
 	const navigate = useNavigate();
 
 	const handleCardClick = () => {
 		navigate(`/plant/${plant.id}`);
 	};
 
+	const defaultImage = "/images/tree_book1.jpg"; // Path to the default image
+
 	return (
-		<Card onClick={handleCardClick} style={{ cursor: "pointer" }}>
-			<Card.Body>
-				<Card.Title>{plant.name}</Card.Title>
-				<Card.Text>
-					Planted on: {new Date(plant.date_planted).toLocaleDateString()}
-				</Card.Text>
-				<Button
-					variant="danger"
-					onClick={(e) => {
-						e.stopPropagation();
-						onDelete(plant.id);
+		<Card
+			onClick={handleCardClick}
+			style={{
+				cursor: "pointer",
+				width: "250px",
+				borderRadius: "10px",
+				overflow: "hidden",
+				boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+				transition: "transform 0.2s",
+			}}
+			className="plant-card"
+		>
+			<Card.Img
+				variant="top"
+				src={plant.image || defaultImage}
+				style={{
+					height: "250px",
+					objectFit: "cover",
+				}}
+			/>
+			<Card.Body
+				style={{
+					padding: "10px",
+					textAlign: "center",
+					backgroundColor: "#f8f9fa",
+				}}
+			>
+				<Card.Title
+					style={{
+						fontSize: "1.25rem",
+						fontWeight: "bold",
+						marginBottom: "5px",
 					}}
 				>
-					Delete
-				</Button>
+					{plant.name}
+				</Card.Title>
+				<Card.Text style={{ color: "#6c757d" }}>
+					Planted: {plant.date_planted}
+				</Card.Text>
 			</Card.Body>
 		</Card>
 	);
-};
-
-PlantCard.propTypes = {
-	plant: PropTypes.shape({
-		id: PropTypes.number.isRequired,
-		name: PropTypes.string.isRequired,
-		date_planted: PropTypes.string.isRequired,
-	}).isRequired,
-	onDelete: PropTypes.func.isRequired,
 };
 
 export default PlantCard;

@@ -1,9 +1,11 @@
 import axios from "axios";
 
+// Create an Axios instance with the base URL
 const api = axios.create({
 	baseURL: "http://localhost:8000/api/v1/", // Adjust this to match your Django backend URL
 });
 
+// Function to set the Authorization token in the headers
 export const setAuthToken = (token) => {
 	if (token) {
 		api.defaults.headers.common["Authorization"] = `Token ${token}`;
@@ -14,12 +16,13 @@ export const setAuthToken = (token) => {
 	}
 };
 
+// Function to clear the Authorization token from the headers
 export const clearAuthToken = () => {
 	delete api.defaults.headers.common["Authorization"];
 	localStorage.removeItem("authToken");
 };
 
-// Authentication
+// Authentication Functions
 export const login = (credentials) => api.post("users/login/", credentials);
 export const signup = (userData) => api.post("users/signup/", userData);
 export const logout = async () => {
@@ -33,14 +36,14 @@ export const logout = async () => {
 	}
 };
 
-// Plants
+// Plant API Functions
 export const getPlants = () => api.get("plants/");
 export const addPlant = (plantData) => api.post("plants/", plantData);
-export const updatePlant = (plantId, plantData) =>
-	api.put(`plants/${plantId}/`, plantData);
-export const deletePlant = (plantId) => api.delete(`plants/${plantId}/`);
+export const updatePlant = (id, plantData) =>
+	api.put(`plants/${id}/`, plantData);
+export const deletePlant = (id) => api.delete(`plants/${id}/`);
 
-// Nutrients
+// Nutrient API Functions
 export const getNutrients = () => api.get("nutrients/");
 export const addNutrient = (nutrientData) =>
 	api.post("nutrients/", nutrientData);

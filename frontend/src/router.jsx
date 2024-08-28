@@ -7,14 +7,13 @@ import MyGardenPage from "./Pages/MyGardenPage";
 import SignUpPage from "./Pages/SignUpPage";
 import LogInPage from "./Pages/LogInPage";
 import NotFoundPage from "./Pages/NotFoundPage";
-import ErrorPage from "./Pages/ErrorPage";
+// import ErrorPage from "./Pages/ErrorPage";
 import PlantPage from "./Pages/PlantPage";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <App />,
-		errorElement: <ErrorPage />,
 		children: [
 			{
 				index: true,
@@ -29,7 +28,7 @@ const router = createBrowserRouter([
 				element: <NutrientsPage />,
 			},
 			{
-				path: "plants",
+				path: "plants/:id", // Use a dynamic route to capture the plant ID
 				element: <PlantPage />,
 			},
 			{
