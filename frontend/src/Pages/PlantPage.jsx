@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; 
+import axios from "axios";
 
 const PlantPage = () => {
 	const [weatherData, setWeatherData] = useState(null);
 	const [userFertSchedule, setUserFertSchedule] = useState("");
+	const [zipCode, setZipCode] = useState("");
+	const [hardinessZone, setHardinessZone] = useState(null);
 
 	useEffect(() => {
 		const fetchWeatherData = async () => {
@@ -20,9 +22,45 @@ const PlantPage = () => {
 		fetchWeatherData();
 	}, []);
 
+	const fetchHardinessZone = async () => {
+		const options = {
+			method: "GET",
+			url: `https://plant-hardiness-zone.p.rapidapi.com/zipcodes/${zipCode}`,
+			headers: {
+				"X-RapidAPI-Key": "dyM0HspY0l7QHFhBE06o7cYJ4_jz2u4wxbTg0hmVbOg",
+				"X-RapidAPI-Host": "plant-hardiness-zone.p.rapidapi.com",
+			},
+		};
+
+		try {
+			const response = await axios.request(options);
+			setHardinessZone(response.data);
+		} catch (error) {
+			console.error("Error fetching hardiness zone:", error);
+		}
+	};
+
 	return (
 		<div className="plant-page">
 			<h1>Plant Page</h1>
+
+			<div className="hardiness-zone-search">
+				<input
+					type="text"
+					value={zipCode}
+					onChange={(e) => setZipCode(e.target.value)}
+					placeholder="Enter ZIP code"
+				/>
+				<button onClick={fetchHardinessZone}>Get Hardiness Zone</button>
+			</div>
+
+			{hardinessZone && (
+				<div className="hardiness-zone-info">
+					<h2>Plant Hardiness Zone</h2>
+					<p>Zone: {hardinessZone.hardiness_zone}</p>
+					<p>Temperature Range: {hardinessZone.temperature_range}</p>
+				</div>
+			)}
 
 			<div className="plant-info">
 				<div className="latest-photo">{/* Add plant photo here */}</div>
@@ -50,7 +88,6 @@ const PlantPage = () => {
 				<h2>Weather Information</h2>
 				{weatherData ? (
 					<div>
-						{/* Display relevant weather data here */}
 						<p>Temperature: {weatherData.hourly.temperature_2m[0]}°F</p>
 						<p>
 							Precipitation Probability:{" "}

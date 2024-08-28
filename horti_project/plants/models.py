@@ -6,7 +6,6 @@ class Plant(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100, blank=True)
     date_planted = models.DateField()
-    photo = models.ImageField(upload_to='plant_photos/', null=True, blank=True)
 
     def __str__(self):
         return self.name

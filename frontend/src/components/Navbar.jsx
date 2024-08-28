@@ -53,14 +53,10 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser, user }) => {
 				</Nav>
 				{isLoggedIn && user && (
 					<Nav>
-						<Navbar.Text>
+						<Navbar.Text className="mr-2">
 							Welcome <strong>{user.username}!</strong>
 						</Navbar.Text>
-						<Button
-							onClick={handleLogout}
-							variant="outline-primary"
-							className="ml-2"
-						>
+						<Button onClick={handleLogout} variant="outline-primary">
 							Log Out
 						</Button>
 					</Nav>

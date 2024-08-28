@@ -8,6 +8,7 @@ import SignUpPage from "./Pages/SignUpPage";
 import LogInPage from "./Pages/LogInPage";
 import NotFoundPage from "./Pages/NotFoundPage";
 import ErrorPage from "./Pages/ErrorPage";
+import PlantPage from "./Pages/PlantPage";
 
 const router = createBrowserRouter([
 	{
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
 			{
 				path: "nutrients",
 				element: <NutrientsPage />,
+			},
+			{
+				path: "plants",
+				element: <PlantPage />,
 			},
 			{
 				path: "signup",

@@ -1,4 +1,4 @@
-import errImg from "../assets/error.jpg";
+import errImg from "/images/error.jpg";
 
 const ErrorPage = () => {
 	return (

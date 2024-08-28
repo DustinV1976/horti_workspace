@@ -9,7 +9,6 @@ class Nutrient(models.Model):
     description = models.TextField(blank=True, null=True)
     amount = models.FloatField(default=0)
     unit = models.CharField(max_length=50, default="tsp/gallon")
-    image = models.ImageField(upload_to='nutrient_images/', blank=True, null=True)
     nitrogen = models.FloatField(null=True, blank=True)
     phosphorus = models.FloatField(null=True, blank=True)
     potassium = models.FloatField(null=True, blank=True)
