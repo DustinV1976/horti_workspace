@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Modal, Button, Form, Alert, Spinner } from "react-bootstrap";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
+import PropTypes from "prop-types";
 
 const AddPlantForm = ({ handleClose, handleAddPlant }) => {
 	const [plantData, setPlantData] = useState({
@@ -66,12 +67,18 @@ const AddPlantForm = ({ handleClose, handleAddPlant }) => {
 						Close
 					</Button>
 					<Button variant="primary" type="submit" disabled={loading}>
-						{loading ? <Spinner animation="border" size="sm" /> : "Add Plant"}
+						Add Plant
 					</Button>
 				</Form>
 			</Modal.Body>
 		</Modal>
 	);
+};
+
+// Prop type validation
+AddPlantForm.propTypes = {
+	handleClose: PropTypes.func.isRequired,
+	handleAddPlant: PropTypes.func.isRequired,
 };
 
 export default AddPlantForm;
