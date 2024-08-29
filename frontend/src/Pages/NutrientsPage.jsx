@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Container, Alert } from "react-bootstrap";
+import { Container, Alert, Button } from "react-bootstrap";
 import axios from "axios";
 import NutrientForm from "../components/NutrientForm";
 import NutrientList from "../components/NutrientList";
+import "../Styling/NutrientsPage.css";
 
 const NutrientsPage = () => {
 	const [nutrients, setNutrients] = useState([]);
 	const [error, setError] = useState("");
+	const [showForm, setShowForm] = useState(false);
 
 	useEffect(() => {
 		fetchNutrients();
@@ -30,21 +32,33 @@ const NutrientsPage = () => {
 	};
 
 	const handleEdit = (nutrient) => {
-		// Implement edit functionality
 		console.log("Edit nutrient:", nutrient);
+	};
+
+	const handleClose = () => {
+		setShowForm(false);
 	};
 
 	return (
 		<Container>
 			<h1>My Nutrients</h1>
 			{error && <Alert variant="danger">{error}</Alert>}
-			<NutrientForm onNutrientAdded={handleNutrientAdded} />
+			<Button variant="primary" onClick={() => setShowForm(true)}>
+				Add Nutrient
+			</Button>
+			<NutrientForm
+				handleClose={handleClose}
+				onNutrientAdded={handleNutrientAdded}
+				show={showForm}
+			/>
 			{nutrients.length === 0 ? (
 				<Alert variant="info">
 					No nutrients added yet, please add for use in Fertilizing Schedule
 				</Alert>
 			) : (
-				<NutrientList nutrients={nutrients} onEdit={handleEdit} />
+				<div className="nutrient-grid">
+					<NutrientList nutrients={nutrients} onEdit={handleEdit} />
+				</div>
 			)}
 		</Container>
 	);

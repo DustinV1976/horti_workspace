@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
+import PropTypes from "prop-types";
 import axios from "axios";
 
-const NutrientForm = ({ onNutrientAdded }) => {
+const NutrientForm = ({ handleClose, onNutrientAdded, show }) => {
 	const [nutrient, setNutrient] = useState({
 		name: "",
 		description: "",
@@ -11,6 +12,8 @@ const NutrientForm = ({ onNutrientAdded }) => {
 		phosphorus: "",
 		potassium: "",
 	});
+	const [error, setError] = useState(null);
+	const [loading, setLoading] = useState(false);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -19,7 +22,20 @@ const NutrientForm = ({ onNutrientAdded }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setLoading(true);
 		const token = localStorage.getItem("authToken");
+
+		// Prepare the nutrient data, only include non-empty values
+		const nutrientData = {
+			name: nutrient.name,
+			description: nutrient.description,
+			amount: nutrient.amount,
+		};
+
+		if (nutrient.nitrogen) nutrientData.nitrogen = nutrient.nitrogen;
+		if (nutrient.phosphorus) nutrientData.phosphorus = nutrient.phosphorus;
+		if (nutrient.potassium) nutrientData.potassium = nutrient.potassium;
+
 		const config = {
 			headers: {
 				Authorization: `Token ${token}`,
@@ -27,8 +43,14 @@ const NutrientForm = ({ onNutrientAdded }) => {
 			},
 		};
 
+		console.log("Sending nutrient data:", nutrientData);
+
 		try {
-			const response = await axios.post("/api/v1/nutrients/", nutrient, config);
+			const response = await axios.post(
+				"/api/v1/nutrients/",
+				nutrientData,
+				config
+			);
 			onNutrientAdded(response.data);
 			setNutrient({
 				name: "",
@@ -38,83 +60,113 @@ const NutrientForm = ({ onNutrientAdded }) => {
 				phosphorus: "",
 				potassium: "",
 			});
+			setError(null);
+			handleClose();
 		} catch (error) {
-			console.error("Error adding nutrient:", error);
-			// Handle error (e.g., show error message to user)
+			setError("Error adding nutrient. Please try again.");
+			console.error("Error adding nutrient:", error.response.data);
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	return (
-		<Form onSubmit={handleSubmit}>
-			<Form.Group controlId="formName">
-				<Form.Label>Name*</Form.Label>
-				<Form.Control
-					type="text"
-					name="name"
-					value={nutrient.name}
-					onChange={handleChange}
-					required
-					autoComplete="off"
-				/>
-			</Form.Group>
-			<Form.Group controlId="formDescription">
-				<Form.Label>Description</Form.Label>
-				<Form.Control
-					as="textarea"
-					name="description"
-					value={nutrient.description}
-					onChange={handleChange}
-					autoComplete="off"
-				/>
-			</Form.Group>
-			<Form.Group controlId="formAmount">
-				<Form.Label>Amount (tsp/gallon)*</Form.Label>
-				<Form.Control
-					type="number"
-					step="0.1"
-					name="amount"
-					value={nutrient.amount}
-					onChange={handleChange}
-					required
-					autoComplete="off"
-				/>
-			</Form.Group>
-			<Form.Group controlId="formNitrogen">
-				<Form.Label>Nitrogen (N)</Form.Label>
-				<Form.Control
-					type="number"
-					step="0.1"
-					name="nitrogen"
-					value={nutrient.nitrogen}
-					onChange={handleChange}
-					autoComplete="off"
-				/>
-			</Form.Group>
-			<Form.Group controlId="formPhosphorus">
-				<Form.Label>Phosphorus (P)</Form.Label>
-				<Form.Control
-					type="number"
-					step="0.1"
-					name="phosphorus"
-					value={nutrient.phosphorus}
-					onChange={handleChange}
-					autoComplete="off"
-				/>
-			</Form.Group>
-			<Form.Group controlId="formPotassium">
-				<Form.Label>Potassium (K)</Form.Label>
-				<Form.Control
-					type="number"
-					step="0.1"
-					name="potassium"
-					value={nutrient.potassium}
-					onChange={handleChange}
-					autoComplete="off"
-				/>
-			</Form.Group>
-			<Button type="submit">Add Nutrient</Button>
-		</Form>
+		<Modal show={show} onHide={handleClose}>
+			<Modal.Header closeButton>
+				<Modal.Title>Add Nutrient</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				{error && <Alert variant="danger">{error}</Alert>}
+				<Form onSubmit={handleSubmit}>
+					<Form.Group className="mb-3">
+						<Form.Label htmlFor="name">Name*</Form.Label>
+						<Form.Control
+							type="text"
+							id="name"
+							name="name"
+							value={nutrient.name}
+							onChange={handleChange}
+							required
+							autoComplete="off"
+						/>
+					</Form.Group>
+					<Form.Group className="mb-3">
+						<Form.Label htmlFor="description">Description</Form.Label>
+						<Form.Control
+							as="textarea"
+							id="description"
+							name="description"
+							value={nutrient.description}
+							onChange={handleChange}
+							autoComplete="off"
+						/>
+					</Form.Group>
+					<Form.Group className="mb-3">
+						<Form.Label htmlFor="amount">Amount (tsp/gallon)*</Form.Label>
+						<Form.Control
+							type="number"
+							step="1"
+							id="amount"
+							name="amount"
+							value={nutrient.amount}
+							onChange={handleChange}
+							required
+							autoComplete="off"
+						/>
+					</Form.Group>
+					<Form.Group className="mb-3">
+						<Form.Label htmlFor="nitrogen">Nitrogen (N)</Form.Label>
+						<Form.Control
+							type="number"
+							step="1"
+							id="nitrogen"
+							name="nitrogen"
+							value={nutrient.nitrogen}
+							onChange={handleChange}
+							autoComplete="off"
+						/>
+					</Form.Group>
+					<Form.Group className="mb-3">
+						<Form.Label htmlFor="phosphorus">Phosphorus (P)</Form.Label>
+						<Form.Control
+							type="number"
+							step="1"
+							id="phosphorus"
+							name="phosphorus"
+							value={nutrient.phosphorus}
+							onChange={handleChange}
+							autoComplete="off"
+						/>
+					</Form.Group>
+					<Form.Group className="mb-3">
+						<Form.Label htmlFor="potassium">Potassium (K)</Form.Label>
+						<Form.Control
+							type="number"
+							step="1"
+							id="potassium"
+							name="potassium"
+							value={nutrient.potassium}
+							onChange={handleChange}
+							autoComplete="off"
+						/>
+					</Form.Group>
+					<Button variant="secondary" onClick={handleClose} disabled={loading}>
+						Close
+					</Button>
+					<Button variant="primary" type="submit" disabled={loading}>
+						Add Nutrient
+					</Button>
+				</Form>
+			</Modal.Body>
+		</Modal>
 	);
+};
+
+// Prop type validation
+NutrientForm.propTypes = {
+	handleClose: PropTypes.func.isRequired,
+	onNutrientAdded: PropTypes.func.isRequired,
+	show: PropTypes.bool.isRequired,
 };
 
 export default NutrientForm;

@@ -7,8 +7,8 @@ import MyGardenPage from "./Pages/MyGardenPage";
 import SignUpPage from "./Pages/SignUpPage";
 import LogInPage from "./Pages/LogInPage";
 import NotFoundPage from "./Pages/NotFoundPage";
-// import ErrorPage from "./Pages/ErrorPage";
 import PlantPage from "./Pages/PlantPage";
+import IndNutrientsPage from "./Pages/IndNutrientsPage"; // Import the new page
 
 const router = createBrowserRouter([
 	{
@@ -28,7 +28,11 @@ const router = createBrowserRouter([
 				element: <NutrientsPage />,
 			},
 			{
-				path: "plants/:id", // Use a dynamic route to capture the plant ID
+				path: "nutrients/:id",
+				element: <IndNutrientsPage />,
+			},
+			{
+				path: "plants/:id",
 				element: <PlantPage />,
 			},
 			{

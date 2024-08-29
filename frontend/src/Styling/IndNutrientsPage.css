@@ -1,0 +1,18 @@
+.ind-nutrient-page {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ind-nutrient-page h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.ind-nutrient-page p {
+    font-size: 1.2em;
+    margin: 5px 0;
+}

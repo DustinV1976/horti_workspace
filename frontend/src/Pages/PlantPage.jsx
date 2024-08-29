@@ -71,7 +71,7 @@ const PlantPage = () => {
 			<h1>{plant.name}</h1>
 
 			<div className="plant-info">
-				<img src={plant.image || "/images/tree_book1.jpg"} alt={plant.name} />
+				<img src={plant.image || "/images/horti_logo.WEBP"} alt={plant.name} />
 				<div className="plant-details">
 					<p>Strain: {plant.strain || "N/A"}</p>
 					<p>Date Planted: {plant.date_planted}</p>

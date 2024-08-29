@@ -6,10 +6,10 @@ const PlantCard = ({ plant }) => {
 	const navigate = useNavigate();
 
 	const handleCardClick = () => {
-		navigate(`/plant/${plant.id}`);
+		navigate(`/plants/${plant.id}`);
 	};
 
-	const defaultImage = "/images/tree_book1.jpg"; // Path to the default image
+	const defaultImage = "/images/horti_logo.WEBP"; // Path to the default image
 
 	return (
 		<Card
