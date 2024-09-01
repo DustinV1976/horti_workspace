@@ -3,6 +3,11 @@
 	margin: 0 auto;
 	padding: 20px;
 	font-family: Arial, sans-serif;
+	background-image: url("/images/tree_book2.jpg"); /* Add the background image */
+	background-size: cover; /* Ensure the background image covers the entire container */
+	background-position: center; /* Center the image */
+	background-repeat: no-repeat; /* Prevent the image from repeating */
+	min-height: 100vh; /* Ensure the container covers the full height of the viewport */
 }
 
 .my-garden-page h1 {

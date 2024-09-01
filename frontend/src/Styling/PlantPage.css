@@ -1,0 +1,176 @@
+/* General styling */
+
+.plant-page {
+	max-width: 1200px;
+	margin: 20px auto;
+	padding: 20px;
+	font-family: Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.header-content {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 20px;
+}
+
+.header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.plant-image {
+	width: 300px;
+	height: 300px;
+	border-radius: 10%;
+	margin-bottom: 10px;
+}
+
+.plant-name {
+	font-size: 36px;
+	margin: 0;
+}
+
+.plant-date {
+	font-size: 16px;
+	color: #666;
+	margin-top: 10px;
+}
+
+/* Weather info box styling */
+.weather-info,
+.quote-info {
+	/* Apply the same styling to both containers */
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: #b2ac88;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.weather-info-container,
+.quote-info-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 10px;
+	width: 100%;
+}
+
+.weather-info-item,
+.quote-info-item {
+	display: flex;
+	justify-content: space-between;
+	padding: 5px 10px;
+}
+
+.weather-info-title,
+.quote-info-title {
+	font-weight: bold;
+}
+
+.weather-input-container {
+	display: flex;
+	margin-top: 20px;
+}
+
+.weather-input {
+	padding: 5px;
+	font-size: 16px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	margin-right: 10px;
+}
+
+.get-weather-button {
+	padding: 5px;
+	font-size: 16px;
+	background-color: #5ec95e;
+	color: rgb(121, 51, 51);
+	border: black;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.get-weather-button:hover {
+	background-color: #4ca74c;
+}
+
+/* Nutrient schedule styling */
+.nutrient-schedule-container {
+	margin-top: 20px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.nutrient-dropdown {
+	margin-bottom: 10px;
+}
+
+.nutrient-strength-button {
+	padding: 5px;
+	border-radius: 5px;
+	border: 1px solid #3b4647;
+	background-color: #5ec95e;
+	cursor: pointer;
+}
+
+.nutrient-schedule img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Delete button styling */
+.delete-button {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	font-size: 14px;
+}
+
+.info-containers {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	gap: 20px;
+}
+
+.trefle-info,
+.weather-info,
+.quote-info {
+	/* Apply consistent styling across containers */
+	flex: 1;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: #b2ac88;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.trefle-search-bar {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 15px;
+}
+
+.trefle-data-box,
+.quote-data-box {
+	/* Additional styling for data display boxes */
+	margin-top: 15px;
+	text-align: center;
+	font-size: 18px;
+}

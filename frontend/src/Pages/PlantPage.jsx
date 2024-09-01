@@ -1,60 +1,119 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import api from "../api";
+import axios from "axios";
+import "../Styling/PlantPage.css";
 
 const PlantPage = () => {
-	const { id } = useParams(); // Get plant ID from URL
+	const { id } = useParams();
 	const [plant, setPlant] = useState(null);
 	const [weatherData, setWeatherData] = useState(null);
-	const [userFertSchedule, setUserFertSchedule] = useState("");
 	const [zipCode, setZipCode] = useState("");
-	const [hardinessZone, setHardinessZone] = useState(null);
 	const [error, setError] = useState(null);
+	const [nutrientStrength, setNutrientStrength] = useState("light");
+	const [quote, setQuote] = useState(null); // New state for the quote
 
 	useEffect(() => {
-		// Fetch plant details by ID
-		const fetchPlant = async () => {
+		const fetchPlantDetails = async () => {
 			try {
-				const response = await axios.get(`/api/v1/plants/${id}/`); // Adjust API endpoint as needed
-				setPlant(response.data);
+				const plantResponse = await api.get(`plants/${id}/`);
+				setPlant(plantResponse.data);
 			} catch (err) {
-				setError("Failed to load plant details.");
+				if (err.response && err.response.status === 401) {
+					setError("Unauthorized access. Please log in again.");
+				} else {
+					setError("Failed to load plant details.");
+				}
 			}
 		};
 
-		fetchPlant();
+		fetchPlantDetails();
 	}, [id]);
 
-	useEffect(() => {
-		const fetchWeatherData = async () => {
-			try {
-				const response = await axios.get(
-					"https://api.open-meteo.com/v1/forecast?latitude=41.85&longitude=-87.65&hourly=temperature_2m,precipitation_probability&daily=sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago"
-				);
-				setWeatherData(response.data);
-			} catch (error) {
-				console.error("Error fetching weather data:", error);
-			}
-		};
-
-		fetchWeatherData();
-	}, []);
-
-	const fetchHardinessZone = async () => {
-		const options = {
-			method: "GET",
-			url: `https://plant-hardiness-zone.p.rapidapi.com/zipcodes/${zipCode}`,
-			headers: {
-				"X-RapidAPI-Key": "dyM0HspY0l7QHFhBE06o7cYJ4_jz2u4wxbTg0hmVbOg",
-				"X-RapidAPI-Host": "plant-hardiness-zone.p.rapidapi.com",
-			},
-		};
-
+	const fetchRandomQuote = async () => {
 		try {
-			const response = await axios.request(options);
-			setHardinessZone(response.data);
+			const response = await axios.get(
+				"https://quotes15.p.rapidapi.com/quotes/random/",
+				{
+					headers: {
+						"X-RapidAPI-Key":
+							"d811f4a675msh68e034d5ba65ebep1740a0jsn34c94a31801f", // Your API key
+						"X-RapidAPI-Host": "quotes15.p.rapidapi.com",
+					},
+					params: {
+						language_code: "en", // Query parameter to set the language to English
+					},
+				}
+			);
+			setQuote(response.data.content); // Assuming 'content' is the key for the quote in the API response
 		} catch (error) {
-			console.error("Error fetching hardiness zone:", error);
+			setError("Failed to load the quote.");
+		}
+	};
+
+	const geocodeZipCode = async (zipCode) => {
+		try {
+			const response = await axios.get(
+				`https://api.zippopotam.us/us/${zipCode}`
+			);
+			const { places } = response.data;
+			if (places && places.length > 0) {
+				const place = places[0];
+				return {
+					latitude: parseFloat(place.latitude),
+					longitude: parseFloat(place.longitude),
+				};
+			}
+			return null;
+		} catch (error) {
+			return null;
+		}
+	};
+
+	const fetchWeatherData = async (latitude, longitude) => {
+		try {
+			const response = await axios.get(
+				"https://api.open-meteo.com/v1/forecast",
+				{
+					params: {
+						latitude,
+						longitude,
+						current_weather: true,
+						daily:
+							"temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,precipitation_probability_max",
+						temperature_unit: "fahrenheit",
+						wind_speed_unit: "mph",
+						precipitation_unit: "inch",
+						timeformat: "unixtime",
+						timezone: "America/Chicago",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			return null;
+		}
+	};
+
+	const handleGetWeather = async () => {
+		const location = await geocodeZipCode(zipCode);
+		if (location) {
+			const { latitude, longitude } = location;
+			const weatherResponse = await fetchWeatherData(latitude, longitude);
+			if (weatherResponse) {
+				setWeatherData(weatherResponse);
+			}
+		} else {
+			setError("Invalid Zip Code. Please try again.");
+		}
+	};
+
+	const handleDeletePlant = async () => {
+		try {
+			await api.delete(`plants/${id}/`);
+			window.location.href = "/mygarden";
+		} catch (err) {
+			setError("Failed to delete plant. Please try again.");
 		}
 	};
 
@@ -68,66 +127,139 @@ const PlantPage = () => {
 
 	return (
 		<div className="plant-page">
-			<h1>{plant.name}</h1>
-
-			<div className="plant-info">
-				<img src={plant.image || "/images/horti_logo.WEBP"} alt={plant.name} />
-				<div className="plant-details">
-					<p>Strain: {plant.strain || "N/A"}</p>
-					<p>Date Planted: {plant.date_planted}</p>
+			<div className="header-content">
+				<div className="header">
+					<img
+						src={plant.image || "/images/horti_logo.WEBP"}
+						alt={plant.name}
+						className="plant-image"
+					/>
+					<h1 className="plant-name">{plant.name}</h1>
+					<p className="plant-date">Date Planted: {plant.date_planted}</p>
 				</div>
-			</div>
 
-			<div className="hardiness-zone-search">
-				<input
-					type="text"
-					value={zipCode}
-					onChange={(e) => setZipCode(e.target.value)}
-					placeholder="Enter ZIP code"
-				/>
-				<button onClick={fetchHardinessZone}>Get Hardiness Zone</button>
-			</div>
+				<div className="content">
+					<div className="info-containers">
+						<div className="weather-info">
+							<h2>Weather Information</h2>
+							<div className="weather-data-box">
+								{weatherData ? (
+									<div className="weather-info-container">
+										{/* Weather data display */}
+										<div className="weather-info-item">
+											<div className="weather-info-title">Temperature Max:</div>
+											<div className="weather-info-data">
+												{weatherData.daily.temperature_2m_max[0]}°F
+											</div>
+										</div>
+										<div className="weather-info-item">
+											<div className="weather-info-title">Temperature Min:</div>
+											<div className="weather-info-data">
+												{weatherData.daily.temperature_2m_min[0]}°F
+											</div>
+										</div>
+										<div className="weather-info-item">
+											<div className="weather-info-title">Sunrise:</div>
+											<div className="weather-info-data">
+												{new Date(
+													weatherData.daily.sunrise[0] * 1000
+												).toLocaleTimeString()}
+											</div>
+										</div>
+										<div className="weather-info-item">
+											<div className="weather-info-title">Sunset:</div>
+											<div className="weather-info-data">
+												{new Date(
+													weatherData.daily.sunset[0] * 1000
+												).toLocaleTimeString()}
+											</div>
+										</div>
+										<div className="weather-info-item">
+											<div className="weather-info-title">Precipitation:</div>
+											<div className="weather-info-data">
+												{weatherData.daily.precipitation_sum[0]} inches
+											</div>
+										</div>
+										<div className="weather-info-item">
+											<div className="weather-info-title">
+												Precipitation Probability:
+											</div>
+											<div className="weather-info-data">
+												{weatherData.daily.precipitation_probability_max[0]}%
+											</div>
+										</div>
+									</div>
+								) : (
+									<p>Enter a ZIP code to get weather data.</p>
+								)}
 
-			{hardinessZone && (
-				<div className="hardiness-zone-info">
-					<h2>Plant Hardiness Zone</h2>
-					<p>Zone: {hardinessZone.hardiness_zone}</p>
-					<p>Temperature Range: {hardinessZone.temperature_range}</p>
-				</div>
-			)}
+								<div className="weather-input-container">
+									<input
+										className="form-control weather-input"
+										type="text"
+										value={zipCode}
+										onChange={(e) => setZipCode(e.target.value)}
+										placeholder="Enter ZIP code"
+									/>
+									<button
+										className="btn btn-primary get-weather-button"
+										onClick={handleGetWeather}
+									>
+										Get Weather Data
+									</button>
+								</div>
+							</div>
+						</div>
 
-			<div className="fertilizing-schedules">
-				<h2>Recommended Fertilizing Schedule</h2>
-				{/* Add recommended schedule image or component here */}
-
-				<h2>User Fertilizing Schedule</h2>
-				<input
-					type="text"
-					value={userFertSchedule}
-					onChange={(e) => setUserFertSchedule(e.target.value)}
-					placeholder="Enter your fertilizing data"
-				/>
-			</div>
-
-			<div className="weather-info">
-				<h2>Weather Information</h2>
-				{weatherData ? (
-					<div>
-						<p>Temperature: {weatherData.hourly.temperature_2m[0]}°F</p>
-						<p>
-							Precipitation Probability:{" "}
-							{weatherData.hourly.precipitation_probability[0]}%
-						</p>
+						<div className="random-wisdom-info weather-info">
+							{" "}
+							{/* Updated to share styles */}
+							<h2>Random Wisdom</h2>
+							<div className="weather-data-box">
+								{" "}
+								{/* Reusing the same class for styling */}
+								{quote ? (
+									<p>{quote}</p>
+								) : (
+									<p>No quote available. Click to load a quote.</p>
+								)}
+								<button className="btn btn-primary" onClick={fetchRandomQuote}>
+									Get Random Quote
+								</button>
+							</div>
+						</div>
 					</div>
-				) : (
-					<p>Loading weather data...</p>
-				)}
+				</div>
 			</div>
 
-			<div className="fertilizing-graph">
-				<h2>Fertilizing Schedule Graph</h2>
-				{/* Add graph component here */}
+			<div className="nutrient-schedule-container">
+				<div className="nutrient-dropdown">
+					<select
+						value={nutrientStrength}
+						onChange={(e) => setNutrientStrength(e.target.value)}
+						className="form-select nutrient-strength-button"
+					>
+						<option value="light">Light</option>
+						<option value="medium">Medium</option>
+						<option value="aggressive">Aggressive</option>
+					</select>
+				</div>
+				<div className="nutrient-schedule">
+					<h2 className="">Nutrient Schedule</h2>
+					<img
+						src={`/images/${nutrientStrength}_fertilizing_schedule.png`}
+						alt={`${nutrientStrength} fertilizing schedule`}
+						className="img-fluid"
+					/>
+				</div>
 			</div>
+
+			<button
+				className="btn btn-danger delete-button"
+				onClick={handleDeletePlant}
+			>
+				Delete Plant
+			</button>
 		</div>
 	);
 };

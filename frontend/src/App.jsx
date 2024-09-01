@@ -16,7 +16,7 @@ function App() {
 			setAuthToken(token);
 			setIsLoggedIn(true);
 			setUser(storedUser);
-			navigate("/mygarden");
+			navigate("/");
 		}
 	}, [navigate]);
 

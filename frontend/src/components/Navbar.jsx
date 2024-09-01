@@ -27,12 +27,10 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser, user }) => {
 					<img
 						src="/images/horti_logo.WEBP"
 						alt="Horti Logo"
-						style={{ width: "80px", height: "80px", marginRight: "10px" }}
+						style={{ width: "80px", height: "80px", marginRight: "10px", borderRadius: "22px"}}
 					/>
-					<span
-						style={{ fontFamily: "'Cursive', sans-serif", fontSize: "24px" }}
-					>
-						Horti
+					<span style={{ fontFamily: "sans-serif", fontSize: "24px" }}>
+						horti
 					</span>
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />

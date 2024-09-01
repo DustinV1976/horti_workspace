@@ -3,7 +3,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { Form, Button, Alert } from "react-bootstrap";
 import { login, setAuthToken } from "../api";
 
-const Login = () => {
+const LogInPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -17,14 +17,22 @@ const Login = () => {
 		try {
 			const response = await login({ email, password });
 			const { token, user } = response.data;
+
+			console.log("Login successful, setting token and user:", { token, user });
+
 			localStorage.setItem("authToken", token);
 			localStorage.setItem("user", JSON.stringify(user));
 			setAuthToken(token);
+
 			setIsLoggedIn(true);
 			setUser(user);
+
 			navigate("/mygarden");
 		} catch (err) {
-			setError(err.response?.data?.error || "Login failed. Please try again.");
+			const message =
+				err.response?.data?.error || "Login failed. Please try again.";
+			setError(message);
+			console.error("Login error:", message);
 		}
 	};
 
@@ -59,4 +67,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default LogInPage;

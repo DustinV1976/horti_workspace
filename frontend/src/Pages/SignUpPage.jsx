@@ -3,7 +3,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { Form, Button, Alert } from "react-bootstrap";
 import { signup, setAuthToken } from "../api";
 
-const SignUp = () => {
+const SignUpPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [username, setUsername] = useState("");
@@ -33,6 +33,11 @@ const SignUp = () => {
 			});
 			const { token, user } = response.data;
 
+			console.log("Signup successful, setting token and user:", {
+				token,
+				user,
+			});
+
 			localStorage.setItem("authToken", token);
 			localStorage.setItem("user", JSON.stringify(user));
 			setAuthToken(token);
@@ -42,9 +47,10 @@ const SignUp = () => {
 
 			navigate("/mygarden");
 		} catch (err) {
-			setError(
-				err.response?.data?.error || "Registration failed. Please try again."
-			);
+			const message =
+				err.response?.data?.error || "Registration failed. Please try again.";
+			setError(message);
+			console.error("Signup error:", message);
 		}
 	};
 
@@ -63,12 +69,13 @@ const SignUp = () => {
 				/>
 			</Form.Group>
 			<Form.Group className="mb-3">
-				<Form.Label>Username</Form.Label> {}
+				<Form.Label>Username</Form.Label>
 				<Form.Control
 					type="text"
 					placeholder="Enter username"
 					value={username}
 					onChange={(e) => setUsername(e.target.value)}
+					required
 				/>
 			</Form.Group>
 			<Form.Group className="mb-3">
@@ -88,4 +95,4 @@ const SignUp = () => {
 	);
 };
 
-export default SignUp;
+export default SignUpPage;

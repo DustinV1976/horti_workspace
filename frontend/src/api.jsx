@@ -12,7 +12,6 @@ export const setAuthToken = (token) => {
 		localStorage.setItem("authToken", token);
 	} else {
 		delete api.defaults.headers.common["Authorization"];
-		localStorage.removeItem("authToken");
 	}
 };
 

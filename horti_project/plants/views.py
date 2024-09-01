@@ -15,3 +15,4 @@ class PlantViewSet(viewsets.ModelViewSet):
         
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
+        

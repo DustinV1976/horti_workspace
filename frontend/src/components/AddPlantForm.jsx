@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-const AddPlantForm = ({ handleClose, handleAddPlant }) => {
+const AddPlantForm = ({ handleClose, handleAddPlant, user }) => {
 	const [plantData, setPlantData] = useState({
 		name: "",
 		date_planted: "",
+		type: "flower",
+		user: user.id,
 	});
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -22,12 +24,15 @@ const AddPlantForm = ({ handleClose, handleAddPlant }) => {
 		e.preventDefault();
 		setLoading(true);
 
+		console.log("Submitting plant data:", plantData);
+
 		try {
 			await handleAddPlant(plantData);
 			setError(null);
+			console.log("Plant added successfully:", plantData);
 		} catch (err) {
 			setError("Failed to add plant. Please try again.");
-			console.error("Error:", err);
+			console.error("Error adding plant:", err);
 		} finally {
 			setLoading(false);
 		}
@@ -54,6 +59,21 @@ const AddPlantForm = ({ handleClose, handleAddPlant }) => {
 						/>
 					</Form.Group>
 					<Form.Group className="mb-3">
+						<Form.Label>Plant Type</Form.Label>
+						<Form.Control
+							as="select"
+							name="type"
+							value={plantData.type}
+							onChange={handleChange}
+							required
+						>
+							<option value="herb">Herb</option>
+							<option value="flower">Flower</option>
+							<option value="vegetable">Vegetable</option>
+							<option value="fruit">Fruit</option>
+						</Form.Control>
+					</Form.Group>
+					<Form.Group className="mb-3">
 						<Form.Label>Date Planted</Form.Label>
 						<Form.Control
 							type="date"
@@ -75,10 +95,12 @@ const AddPlantForm = ({ handleClose, handleAddPlant }) => {
 	);
 };
 
-// Prop type validation
 AddPlantForm.propTypes = {
 	handleClose: PropTypes.func.isRequired,
 	handleAddPlant: PropTypes.func.isRequired,
+	user: PropTypes.shape({
+		id: PropTypes.number.isRequired,
+	}).isRequired,
 };
 
 export default AddPlantForm;

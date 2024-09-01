@@ -4,11 +4,10 @@ import PlantCard from "../components/PlantCard";
 import AddPlantForm from "../components/AddPlantForm";
 import { useOutletContext } from "react-router-dom";
 import { getPlants, addPlant, updatePlant, deletePlant } from "../api";
+import "../Styling/MyGardenPage.css"; // Import the CSS for this page
 
 const MyGardenPage = () => {
-	const context = useOutletContext();
-	const { user } = context || {}; // Removed isLoggedIn and setUser as they are unused
-
+	const [isLoggedIn, setIsLoggedIn, user, setUser] = useOutletContext();
 	const [plants, setPlants] = useState([]);
 	const [showAddForm, setShowAddForm] = useState(false);
 	const [error, setError] = useState(null);
@@ -19,27 +18,32 @@ const MyGardenPage = () => {
 
 	const fetchPlants = async () => {
 		try {
+			console.log("Fetching plants for user:", user);
 			const response = await getPlants();
 			setPlants(response.data || []); // Fallback to empty array if data is undefined
 			setError(null);
 		} catch (error) {
 			setError("Failed to fetch plants. Please add a plant.");
+			console.error("Error fetching plants:", error);
 		}
 	};
 
 	const handleAddPlant = async (plantData) => {
 		try {
+			console.log("Adding plant with data:", plantData);
 			const response = await addPlant(plantData);
 			setPlants([...plants, response.data]);
 			setShowAddForm(false);
 			setError(null);
 		} catch (error) {
 			setError("Failed to add plant. Please try again.");
+			console.error("Error adding plant:", error);
 		}
 	};
 
 	const handleUpdatePlant = async (plantId, updatedData) => {
 		try {
+			console.log("Updating plant with ID:", plantId, "Data:", updatedData);
 			const response = await updatePlant(plantId, updatedData);
 			setPlants(
 				plants.map((plant) => (plant.id === plantId ? response.data : plant))
@@ -47,22 +51,24 @@ const MyGardenPage = () => {
 			setError(null);
 		} catch (error) {
 			setError("Failed to update plant. Please try again.");
+			console.error("Error updating plant:", error);
 		}
 	};
 
 	const handleDeletePlant = async (plantId) => {
 		try {
+			console.log("Deleting plant with ID:", plantId);
 			await deletePlant(plantId);
 			setPlants(plants.filter((plant) => plant.id !== plantId));
 			setError(null);
 		} catch (error) {
 			setError("Failed to delete plant. Please try again.");
+			console.error("Error deleting plant:", error);
 		}
 	};
 
 	return (
 		<Container className="my-garden-page">
-			{/* Display the user's garden if user data is available */}
 			{user && (
 				<h1 className="text-center">
 					Welcome to your garden, {user.username}!
@@ -79,6 +85,7 @@ const MyGardenPage = () => {
 				<AddPlantForm
 					handleClose={() => setShowAddForm(false)}
 					handleAddPlant={handleAddPlant}
+					user={user} // Pass the user object to AddPlantForm
 				/>
 			)}
 

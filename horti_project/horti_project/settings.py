@@ -11,23 +11,26 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-# import os
+from dotenv import load_dotenv
+import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Load environment variables from .env file
+load_dotenv()
+
+# Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wte@2sh1b((jvfqun-0bzw!o9@_4!dc*(5btkjoda^o(^*-1)7'
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# Security
+SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
-
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
+# API Keys
+RAPIDAPI_KEY = os.getenv('RAPIDAPI_KEY')
+
+# TREFLE_API_KEY = os.getenv("TREFLE_API_KEY")
+# if not TREFLE_API_KEY:
+    # raise ValueError("TREFLE_API_KEY is not set or invalid.")
 
 # Application definition
 
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'users',
     'plants',
     'nutrients',
+    
 ]
 
 MIDDLEWARE = [
@@ -85,6 +89,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'horti_db',
+        # 'USER': os.getenv('DATABASE_USER'),
+        # 'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        # 'HOST': os.getenv('DATABASE_HOST'),
+        # 'PORT': os.getenv('DATABASE_PORT', '5432'),
     }
 }
 
@@ -146,7 +154,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more specific in production
+# CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more specific in production
 
 CORS_ALLOW_METHODS = [
     "DELETE",
