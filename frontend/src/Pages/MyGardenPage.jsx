@@ -4,10 +4,10 @@ import PlantCard from "../components/PlantCard";
 import AddPlantForm from "../components/AddPlantForm";
 import { useOutletContext } from "react-router-dom";
 import { getPlants, addPlant, updatePlant, deletePlant } from "../api";
-import "../Styling/MyGardenPage.css"; // Import the CSS for this page
+import "../Styling/MyGardenPage.css";
 
 const MyGardenPage = () => {
-	const [isLoggedIn, setIsLoggedIn, user, setUser] = useOutletContext();
+	const { isLoggedIn, setIsLoggedIn, user, setUser } = useOutletContext(); // Destructure as an object if that's what it's returning
 	const [plants, setPlants] = useState([]);
 	const [showAddForm, setShowAddForm] = useState(false);
 	const [error, setError] = useState(null);

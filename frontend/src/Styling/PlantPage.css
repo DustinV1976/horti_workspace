@@ -146,7 +146,7 @@
 	gap: 20px;
 }
 
-.trefle-info,
+
 .weather-info,
 .quote-info {
 	/* Apply consistent styling across containers */
@@ -161,16 +161,5 @@
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.trefle-search-bar {
-	display: flex;
-	gap: 10px;
-	margin-bottom: 15px;
-}
 
-.trefle-data-box,
-.quote-data-box {
-	/* Additional styling for data display boxes */
-	margin-top: 15px;
-	text-align: center;
-	font-size: 18px;
-}
+

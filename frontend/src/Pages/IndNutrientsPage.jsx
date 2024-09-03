@@ -4,10 +4,10 @@ import axios from "axios";
 import "../Styling/IndNutrientsPage.css";
 
 const IndNutrientsPage = () => {
-	const { id } = useParams(); // Get the nutrient ID from the URL parameters
+	const { id } = useParams();
 	const [nutrient, setNutrient] = useState(null);
 	const [error, setError] = useState("");
-	const navigate = useNavigate(); // Use navigate to redirect after deletion
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchNutrient = async () => {
@@ -32,7 +32,7 @@ const IndNutrientsPage = () => {
 			await axios.delete(`/api/v1/nutrients/${id}/`, {
 				headers: { Authorization: `Token ${token}` },
 			});
-			navigate("/nutrients"); // Redirect to the nutrients list page after deletion
+			navigate("/nutrients");
 		} catch (err) {
 			setError("Failed to delete nutrient. Please try again.");
 		}

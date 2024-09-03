@@ -6,7 +6,7 @@ import NutrientsPage from "./Pages/NutrientsPage";
 import MyGardenPage from "./Pages/MyGardenPage";
 import SignUpPage from "./Pages/SignUpPage";
 import LogInPage from "./Pages/LogInPage";
-import NotFoundPage from "./Pages/NotFoundPage";
+import ErrorPage from "./Pages/ErrorPage";
 import PlantPage from "./Pages/PlantPage";
 import IndNutrientsPage from "./Pages/IndNutrientsPage"; // Import the new page
 
@@ -45,7 +45,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "*",
-				element: <NotFoundPage />,
+				element: <ErrorPage />,
 			},
 		],
 	},

@@ -1,3 +1,4 @@
+import React from "react";
 import errImg from "/images/error.jpg";
 
 const ErrorPage = () => {
@@ -10,7 +11,7 @@ const ErrorPage = () => {
 				justifyContent: "center",
 				alignItems: "center",
 			}}
-		
+		>
 			<img src={errImg} alt="Error" style={{ height: "90vh", width: "90vw" }} />
 		</div>
 	);
