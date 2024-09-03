@@ -1,67 +1,78 @@
 import React, { useState, useEffect } from "react";
-import { Container, Alert, Button } from "react-bootstrap";
+import { Button, Alert, Container } from "react-bootstrap";
 import axios from "axios";
 import NutrientForm from "../components/NutrientForm";
-import NutrientList from "../components/NutrientList";
+import NutrientCard from "../components/NutrientCard";
+import { useOutletContext } from "react-router-dom";
 import "../Styling/NutrientsPage.css";
 
 const NutrientsPage = () => {
-	const [nutrients, setNutrients] = useState([]);
-	const [error, setError] = useState("");
-	const [showForm, setShowForm] = useState(false);
+  const { user } = useOutletContext();
+  const [nutrients, setNutrients] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [error, setError] = useState(null);
 
-	useEffect(() => {
-		fetchNutrients();
-	}, []);
+  useEffect(() => {
+    fetchNutrients();
+  }, []);
 
-	const fetchNutrients = async () => {
-		const token = localStorage.getItem("authToken");
-		try {
-			const response = await axios.get("/api/v1/nutrients/", {
-				headers: { Authorization: `Token ${token}` },
-			});
-			setNutrients(response.data);
-			setError("");
-		} catch (err) {
-			setError("Failed to fetch nutrients. Please try again.");
-		}
-	};
+  const fetchNutrients = async () => {
+    const token = localStorage.getItem("authToken");
+    try {
+      const response = await axios.get("/api/v1/nutrients/", {
+        headers: { Authorization: `Token ${token}` },
+      });
+      setNutrients(response.data);
+      setError(null);
+    } catch (error) {
+      setError("Failed to fetch nutrients. Please try again.");
+      console.error("Error fetching nutrients:", error);
+    }
+  };
 
-	const handleNutrientAdded = (newNutrient) => {
-		setNutrients([...nutrients, newNutrient]);
-	};
+  const handleAddNutrient = async (nutrientData) => {
+    const token = localStorage.getItem("authToken");
+    try {
+      const response = await axios.post("/api/v1/nutrients/", nutrientData, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      setNutrients([...nutrients, response.data]);
+      setShowAddForm(false);
+      setError(null);
+    } catch (error) {
+      setError("Failed to add nutrient. Please try again.");
+      console.error("Error adding nutrient:", error);
+    }
+  };
 
-	const handleEdit = (nutrient) => {
-		console.log("Edit nutrient:", nutrient);
-	};
+  return (
+    <Container className="nutrients-page">
+      {user && (
+        <h1 className="text-center">
+          Welcome to your nutrients, {user.username}!
+        </h1>
+      )}
 
-	const handleClose = () => {
-		setShowForm(false);
-	};
+      <Button onClick={() => setShowAddForm(true)} className="add-nutrient-button">
+        Add Nutrient
+      </Button>
 
-	return (
-		<Container>
-			<h1>My Nutrients</h1>
-			{error && <Alert variant="danger">{error}</Alert>}
-			<Button variant="primary" onClick={() => setShowForm(true)}>
-				Add Nutrient
-			</Button>
-			<NutrientForm
-				handleClose={handleClose}
-				onNutrientAdded={handleNutrientAdded}
-				show={showForm}
-			/>
-			{nutrients.length === 0 ? (
-				<Alert variant="info">
-					No nutrients added yet, please add for use in Fertilizing Schedule
-				</Alert>
-			) : (
-				<div className="nutrient-grid">
-					<NutrientList nutrients={nutrients} onEdit={handleEdit} />
-				</div>
-			)}
-		</Container>
-	);
+      {error && <Alert variant="danger">{error}</Alert>}
+
+      {showAddForm && (
+        <NutrientForm
+          handleClose={() => setShowAddForm(false)}
+          handleAddNutrient={handleAddNutrient}
+        />
+      )}
+
+      <div className="nutrient-grid">
+        {nutrients.map((nutrient) => (
+          <NutrientCard key={nutrient.id} nutrient={nutrient} />
+        ))}
+      </div>
+    </Container>
+  );
 };
 
 export default NutrientsPage;

@@ -3,14 +3,12 @@ import PropTypes from "prop-types";
 import { Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const PlantCard = ({ plant }) => {
+const NutrientCard = ({ nutrient }) => {
 	const navigate = useNavigate();
 
 	const handleCardClick = () => {
-		navigate(`/plants/${plant.id}`);
+		navigate(`/nutrients/${nutrient.id}`);
 	};
-
-	const defaultImage = "/images/horti_logo.WEBP";
 
 	return (
 		<Card
@@ -23,19 +21,11 @@ const PlantCard = ({ plant }) => {
 				boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 				transition: "transform 0.2s",
 			}}
-			className="plant-card"
+			className="nutrient-card"
 		>
-			<Card.Img
-				variant="top"
-				src={plant.image || defaultImage}
-				style={{
-					height: "250px",
-					objectFit: "cover",
-				}}
-			/>
 			<Card.Body
 				style={{
-					padding: "10px",
+					padding: "20px",
 					textAlign: "center",
 					backgroundColor: "#f8f9fa",
 				}}
@@ -44,26 +34,32 @@ const PlantCard = ({ plant }) => {
 					style={{
 						fontSize: "1.25rem",
 						fontWeight: "bold",
-						marginBottom: "5px",
+						marginBottom: "10px",
 					}}
 				>
-					{plant.name}
+					{nutrient.name}
 				</Card.Title>
-				<Card.Text style={{ color: "#6c757d" }}>
-					Planted: {plant.date_planted}
+				<Card.Text>
+					Amount: {nutrient.amount} {nutrient.unit}
+				</Card.Text>
+				<Card.Text>
+					N-P-K: {nutrient.nitrogen}-{nutrient.phosphorus}-{nutrient.potassium}
 				</Card.Text>
 			</Card.Body>
 		</Card>
 	);
 };
 
-PlantCard.propTypes = {
-	plant: PropTypes.shape({
-		id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+NutrientCard.propTypes = {
+	nutrient: PropTypes.shape({
+		id: PropTypes.number.isRequired,
 		name: PropTypes.string.isRequired,
-		image: PropTypes.string,
-		date_planted: PropTypes.string.isRequired,
+		amount: PropTypes.number.isRequired,
+		unit: PropTypes.string,
+		nitrogen: PropTypes.number,
+		phosphorus: PropTypes.number,
+		potassium: PropTypes.number,
 	}).isRequired,
 };
 
-export default PlantCard;
+export default NutrientCard;

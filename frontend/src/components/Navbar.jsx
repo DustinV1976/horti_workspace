@@ -4,7 +4,7 @@ import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { logout } from "../api";
 
-const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser, user }) => {
+const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser }) => {
 	const navigate = useNavigate();
 
 	const handleLogout = async () => {
@@ -27,7 +27,12 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn, setUser, user }) => {
 					<img
 						src="/images/horti_logo.WEBP"
 						alt="Horti Logo"
-						style={{ width: "80px", height: "80px", marginRight: "10px", borderRadius: "22px"}}
+						style={{
+							width: "80px",
+							height: "80px",
+							marginRight: "10px",
+							borderRadius: "22px",
+						}}
 					/>
 					<span style={{ fontFamily: "sans-serif", fontSize: "24px" }}>
 						horti

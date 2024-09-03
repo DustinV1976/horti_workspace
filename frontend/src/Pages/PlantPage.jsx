@@ -11,15 +11,15 @@ const PlantPage = () => {
 	const [zipCode, setZipCode] = useState("");
 	const [error, setError] = useState(null);
 	const [nutrientStrength, setNutrientStrength] = useState("light");
-	const [quote, setQuote] = useState(null); // New state for the quote
+	const [quote, setQuote] = useState(null);
 
 	useEffect(() => {
 		const fetchPlantDetails = async () => {
 			try {
 				const plantResponse = await api.get(`plants/${id}/`);
 				setPlant(plantResponse.data);
-			} catch (err) {
-				if (err.response && err.response.status === 401) {
+			} catch (error) {
+				if (error.response && error.response.status === 401) {
 					setError("Unauthorized access. Please log in again.");
 				} else {
 					setError("Failed to load plant details.");
@@ -37,15 +37,15 @@ const PlantPage = () => {
 				{
 					headers: {
 						"X-RapidAPI-Key":
-							"d811f4a675msh68e034d5ba65ebep1740a0jsn34c94a31801f", // Your API key
+							"d811f4a675msh68e034d5ba65ebep1740a0jsn34c94a31801f",
 						"X-RapidAPI-Host": "quotes15.p.rapidapi.com",
 					},
 					params: {
-						language_code: "en", // Query parameter to set the language to English
+						language_code: "en",
 					},
 				}
 			);
-			setQuote(response.data.content); // Assuming 'content' is the key for the quote in the API response
+			setQuote(response.data.content);
 		} catch (error) {
 			setError("Failed to load the quote.");
 		}
@@ -66,6 +66,7 @@ const PlantPage = () => {
 			}
 			return null;
 		} catch (error) {
+			setError("Invalid Zip Code. Please try again.");
 			return null;
 		}
 	};
@@ -91,6 +92,7 @@ const PlantPage = () => {
 			);
 			return response.data;
 		} catch (error) {
+			setError("Failed to fetch weather data. Please try again.");
 			return null;
 		}
 	};
@@ -103,8 +105,6 @@ const PlantPage = () => {
 			if (weatherResponse) {
 				setWeatherData(weatherResponse);
 			}
-		} else {
-			setError("Invalid Zip Code. Please try again.");
 		}
 	};
 
@@ -112,7 +112,7 @@ const PlantPage = () => {
 		try {
 			await api.delete(`plants/${id}/`);
 			window.location.href = "/mygarden";
-		} catch (err) {
+		} catch (error) {
 			setError("Failed to delete plant. Please try again.");
 		}
 	};
@@ -124,7 +124,6 @@ const PlantPage = () => {
 	if (!plant) {
 		return <div>Loading plant details...</div>;
 	}
-
 	return (
 		<div className="plant-page">
 			<div className="header-content">

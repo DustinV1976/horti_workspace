@@ -18,8 +18,9 @@ const IndNutrientsPage = () => {
 				});
 				setNutrient(response.data);
 				setError("");
-			} catch (err) {
+			} catch (error) {
 				setError("Failed to fetch nutrient. Please try again.");
+				console.error("Error fetching nutrient:", error);
 			}
 		};
 
@@ -33,8 +34,9 @@ const IndNutrientsPage = () => {
 				headers: { Authorization: `Token ${token}` },
 			});
 			navigate("/nutrients");
-		} catch (err) {
+		} catch (error) {
 			setError("Failed to delete nutrient. Please try again.");
+			console.error("Error deleting nutrient:", error);
 		}
 	};
 

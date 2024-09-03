@@ -22,7 +22,7 @@ const styles = {
 	heading: {
 		color: "white",
 		textAlign: "center",
-		fontSize: "2.5rem",
+		fontSize: "4.5rem",
 	},
 };
 

@@ -4,7 +4,8 @@ from .models import Plant
 class PlantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Plant
-        fields = ['id', 'name', 'type', 'date_planted', 'user']
+        fields = ['id', 'name', 'type', 'date_planted']
+        read_only_fields = ['user']
 
     def create(self, validated_data):
         return Plant.objects.create(**validated_data)

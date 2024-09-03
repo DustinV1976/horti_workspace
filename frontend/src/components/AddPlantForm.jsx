@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { Modal, Button, Form, Alert } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-const AddPlantForm = ({ handleClose, handleAddPlant, user }) => {
+const AddPlantForm = ({ handleClose, handleAddPlant }) => {
 	const [plantData, setPlantData] = useState({
 		name: "",
 		date_planted: "",
 		type: "flower",
-		user: user.id,
 	});
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -98,9 +97,6 @@ const AddPlantForm = ({ handleClose, handleAddPlant, user }) => {
 AddPlantForm.propTypes = {
 	handleClose: PropTypes.func.isRequired,
 	handleAddPlant: PropTypes.func.isRequired,
-	user: PropTypes.shape({
-		id: PropTypes.number.isRequired,
-	}).isRequired,
 };
 
 export default AddPlantForm;
