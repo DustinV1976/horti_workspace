@@ -212,11 +212,11 @@ const PlantPage = () => {
 
 						<div className="random-wisdom-info weather-info">
 							{" "}
-							{/* Updated to share styles */}
+							{}
 							<h2>Random Wisdom</h2>
 							<div className="weather-data-box">
 								{" "}
-								{/* Reusing the same class for styling */}
+								{}
 								{quote ? (
 									<p>{quote}</p>
 								) : (

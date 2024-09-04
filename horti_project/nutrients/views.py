@@ -11,3 +11,6 @@ class NutrientViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Nutrient.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save()

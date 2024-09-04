@@ -8,7 +8,7 @@ import SignUpPage from "./Pages/SignUpPage";
 import LogInPage from "./Pages/LogInPage";
 import ErrorPage from "./Pages/ErrorPage";
 import PlantPage from "./Pages/PlantPage";
-import IndNutrientsPage from "./Pages/IndNutrientsPage"; // Import the new page
+import IndNutrientsPage from "./Pages/IndNutrientsPage";
 
 const router = createBrowserRouter([
 	{
