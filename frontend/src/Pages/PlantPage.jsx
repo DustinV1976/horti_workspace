@@ -36,8 +36,7 @@ const PlantPage = () => {
 				"https://quotes15.p.rapidapi.com/quotes/random/",
 				{
 					headers: {
-						"X-RapidAPI-Key":
-							"d811f4a675msh68e034d5ba65ebep1740a0jsn34c94a31801f",
+						"X-RapidAPI-Key": import.meta.env.VITE_RAPIDAPI_KEY,
 						"X-RapidAPI-Host": "quotes15.p.rapidapi.com",
 					},
 					params: {
